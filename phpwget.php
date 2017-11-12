@@ -78,10 +78,7 @@ STR;
 
         $this->options = getopt( $this->optionIndex );
 
-        if ( isset( $this->options['h'] ) ) {
-            echo $this->helpMassage;
-            die ( 1 );
-        }
+        $this->displayHelpMassage();
         $this->checkOptions();
         $this->fileURL = $this->options['u'];
         if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
@@ -99,6 +96,13 @@ STR;
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
             echo $this->errorMassages[3];
+            die ( 1 );
+        }
+    }
+
+    private function displayHelpMassage() {
+        if ( isset( $this->options['h'] ) ) {
+            echo $this->helpMassage;
             die ( 1 );
         }
     }
