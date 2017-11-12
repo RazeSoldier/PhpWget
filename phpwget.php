@@ -1,7 +1,7 @@
 <?php
-/** 
+/**
  * This script can be download file.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -16,7 +16,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
- * 
+ *
  * @file
  */
 
@@ -59,12 +59,12 @@ STR;
     /**
      * @var array $errorMassage
      */
-    private $errorMassages = array(
+    private $errorMassages = [
         1 => "[Notice] You have not typed 'u' option, the script exit.\n",
         2 => "[Notice] The URL you entered is not in the correct format, please check the URL you entered.\n",
         3 => "[Warning] You did not load curl extension, the script does not work.\n",
         4 => "[Warning] PhpWget does not support your operating system.\n"
-        );
+        ];
 
     /**
      * @var resource $curlResource
@@ -78,10 +78,7 @@ STR;
 
         $this->options = getopt( $this->optionIndex );
 
-        if ( isset( $this->options['h'] ) ) {
-            echo $this->helpMassage;
-            die ( 1 );
-        }
+        $this->displayHelpMassage();
         $this->checkOptions();
         $this->fileURL = $this->options['u'];
         if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
@@ -99,6 +96,16 @@ STR;
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
             echo $this->errorMassages[3];
+            die ( 1 );
+        }
+    }
+
+    /**
+     * Display help massage, if there is 'u' option
+     */
+    private function displayHelpMassage() {
+        if ( isset( $this->options['h'] ) ) {
+            echo $this->helpMassage;
             die ( 1 );
         }
     }
