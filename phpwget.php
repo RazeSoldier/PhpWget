@@ -59,12 +59,12 @@ STR;
     /**
      * @var array $errorMassage
      */
-    private $errorMassages = array(
+    private $errorMassages = [
         1 => "[Notice] You have not typed 'u' option, the script exit.\n",
         2 => "[Notice] The URL you entered is not in the correct format, please check the URL you entered.\n",
         3 => "[Warning] You did not load curl extension, the script does not work.\n",
         4 => "[Warning] PhpWget does not support your operating system.\n"
-        );
+        ];
 
     /**
      * @var resource $curlResource
