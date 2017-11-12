@@ -100,6 +100,9 @@ STR;
         }
     }
 
+    /**
+     * Display help massage, if there is 'u' option
+     */
     private function displayHelpMassage() {
         if ( isset( $this->options['h'] ) ) {
             echo $this->helpMassage;
