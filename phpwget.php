@@ -168,7 +168,23 @@ STR;
         curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
         $filename = $this->getFilename();
-        file_put_contents( $filename, curl_exec( $this->curlResource ) );
+        $download = file_put_contents( $filename, curl_exec( $this->curlResource ) );
+        $this->displayConcludingWords($download);
+    }
+
+    /**
+     * Display concluding words, if the file successfully written to the file system
+     */
+    private function displayConcludingWords($check) {
+      if ( isset( $this->fileDir ) ) {
+        $targetDir = $this->fileDir;
+      } else {
+        $targetDir = getcwd();
+      }
+
+      if ( !$check === false ) {
+        echo "{$this->getFilename()} successfully download to $targetDir\n";
+      }
     }
 
     /**
