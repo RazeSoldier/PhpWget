@@ -175,7 +175,7 @@ STR;
      * According to the URL to determine the file name.
      */
     private function getFilename() {
-	   if ( isset( $this->fileDir ) ) {
+        if ( isset( $this->fileDir ) ) {
             if ( is_dir( $this->fileDir ) ) {
                 $filename = $this->fileDir.'/index.html';
             } else {
