@@ -127,8 +127,8 @@ STR;
     private function checkURL() {
         // Check the format of the URL is correct
         $pattern = '/\bhttps?:\/{2}[a-zA-Z0-9.]*\b/';
-        $i = preg_match( $pattern, $this->fileURL );
-        if ( $i === 0 ) {
+        $matchResult = preg_match( $pattern, $this->fileURL );
+        if ( $matchResult === 0 ) {
             echo $this->errorMassages[2];
             die ( 1 );
         }
