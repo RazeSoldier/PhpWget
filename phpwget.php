@@ -139,24 +139,36 @@ STR;
      */
     private function checkFileDir() {
         if ( is_dir( $this->fileDir ) ) {
-            if ( PHP_OS === 'WINNT' or PHP_OS === 'WIN32' or PHP_OS === 'Windows') {
-                $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*[a-zA-Z0-9\s]*/';
-            } elseif ( PHP_OS === 'Linux' or PHP_OS === 'Unix') {
-                $pattern = '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/';
-            } else {
-                echo $this->errorMassages[4];
-                die ( 1 );
-            }
+            switch( PHP_OS ) {
+                case 'WINNT':
+                case 'WIN32':
+                case 'Windows':
+                    $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
+                    break;
+                case 'Linux':
+                case 'Unix':
+                    $pattern = '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/';
+                    break;
+                default:
+                    echo $this->errorMassages[4];
+                    die ( 1 );
+            } //end switch
         } else {
-            if ( PHP_OS === 'WINNT' or PHP_OS === 'WIN32' or PHP_OS === 'Windows') {
-                $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
-            } elseif ( PHP_OS === 'Linux' or PHP_OS === 'Unix') {
-                $pattern = '/^\/?([a-zA-Z0-9]*\/)*/';
-            } else {
-                echo $this->errorMassages[4];
-                die ( 1 );
-            }
-        }
+            switch( PHP_OS ) {
+                case 'WINNT':
+                case 'WIN32':
+                case 'Windows':
+                    $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
+                    break;
+                case 'Linux':
+                case 'Unix':
+                    $pattern = '/^\/?([a-zA-Z0-9]*\/)*/';
+                    break;
+                default:
+                    echo $this->errorMassages[4];
+                    die ( 1 );
+            } //end switch
+        } //end if
         preg_match( $pattern, $this->fileDir, $matches);
 
         if ( !is_writable( $matches[0] ) ) {
@@ -175,7 +187,7 @@ STR;
      * According to the URL to determine the file name.
      */
     private function getFilename() {
-	   if ( isset( $this->fileDir ) ) {
+        if ( isset( $this->fileDir ) ) {
             if ( is_dir( $this->fileDir ) ) {
                 $filename = $this->fileDir.'/index.html';
             } else {
