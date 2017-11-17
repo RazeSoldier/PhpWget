@@ -201,21 +201,6 @@ STR;
     }
 
     /**
-     * Display concluding words, if the file successfully written to the file system
-     */
-    private function displayConcludingWords($check) {
-      if ( isset( $this->fileDir ) ) {
-        $targetDir = $this->fileDir;
-      } else {
-        $targetDir = getcwd();
-      }
-
-      if ( !$check === false ) {
-        echo "{$this->getFileName()} successfully download to $targetDir\n";
-      }
-    }
-
-    /**
      * According to the URL to determine the file directory.
      */
     private function getFileDir() {
@@ -233,6 +218,21 @@ STR;
             }
         }
         return $filedir;
+    }
+
+    /**
+     * Display concluding words, if the file successfully written to the file system
+     */
+    private function displayConcludingWords($check) {
+      if ( isset( $this->fileDir ) ) {
+        $targetDir = $this->fileDir;
+      } else {
+        $targetDir = getcwd();
+      }
+
+      if ( !$check === false ) {
+        echo "{$this->getFileName()} successfully download to $targetDir\n";
+      }
     }
 
     /**
