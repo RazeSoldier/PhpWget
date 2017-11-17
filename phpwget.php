@@ -71,6 +71,22 @@ STR;
      */
     private $curlResource;
 
+    /**
+     * @var array $rePatterns Stores regular expression pattenrs
+     */
+    private $rePatterns = [
+        'win' => [
+            1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/'
+        ],
+        'unix' => [
+            1 => '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/', //Used to match the full path
+            2 => '/^\/?([a-zA-Z0-9]*\/)*/' //Used to match the folder path
+        ],
+        'web' => [
+            1 => '/\bhttps?:\/{2}[a-zA-Z0-9.]*\/?\b/'
+        ]
+    ];
+
     public function __construct() {
         echo "PHP runs in cli mode.\n";
 
@@ -126,7 +142,7 @@ STR;
      */
     private function checkURL() {
         // Check the format of the URL is correct
-        $pattern = '/\bhttps?:\/{2}[a-zA-Z0-9.]*\b/';
+        $pattern = $this->rePatterns['web'][1];
         $matchResult = preg_match( $pattern, $this->fileURL );
         if ( $matchResult === 0 ) {
             echo $this->errorMassages[2];
@@ -143,11 +159,11 @@ STR;
                 case 'WINNT':
                 case 'WIN32':
                 case 'Windows':
-                    $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
+                    $pattern = $this->rePatterns['win'][1];
                     break;
                 case 'Linux':
                 case 'Unix':
-                    $pattern = '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/';
+                    $pattern = $this->rePatterns['unix'][1];
                     break;
                 default:
                     echo $this->errorMassages[4];
@@ -158,11 +174,11 @@ STR;
                 case 'WINNT':
                 case 'WIN32':
                 case 'Windows':
-                    $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
+                    $pattern = $this->rePatterns['win'][1];
                     break;
                 case 'Linux':
                 case 'Unix':
-                    $pattern = '/^\/?([a-zA-Z0-9]*\/)*/';
+                    $pattern = $this->rePatterns['unix'][2];
                     break;
                 default:
                     echo $this->errorMassages[4];
@@ -179,27 +195,79 @@ STR;
     public function download() {
         curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
-        $filename = $this->getFilename();
-        file_put_contents( $filename, curl_exec( $this->curlResource ) );
+        $filedir = $this->getFileDir();
+        $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
+        $this->displayConcludingWords($download);
+    }
+
+    /**
+     * According to the URL to determine the file directory.
+     */
+    private function getFileDir() {
+        if ( isset( $this->fileDir ) ) {
+            if ( is_dir( $this->fileDir ) ) {
+                $filedir = $this->fileDir.'/index.html';
+            } else {
+                $filedir = $this->fileDir;
+            }
+        } else {
+            $pattern = $this->rePatterns['web'][1];
+            $filedir = preg_replace( $pattern, null, $this->fileURL );
+            if ( $filedir === '' ) {
+                $filedir = 'index.html';
+            }
+        }
+        return $filedir;
+    }
+
+    /**
+     * Display concluding words, if the file successfully written to the file system
+     */
+    private function displayConcludingWords($check) {
+      if ( isset( $this->fileDir ) ) {
+        $targetDir = $this->fileDir;
+      } else {
+        $targetDir = getcwd();
+      }
+
+      if ( !$check === false ) {
+        echo "{$this->getFileName()} successfully download to $targetDir\n";
+      }
     }
 
     /**
      * According to the URL to determine the file name.
      */
-    private function getFilename() {
+    private function getFileName() {
         if ( isset( $this->fileDir ) ) {
             if ( is_dir( $this->fileDir ) ) {
-                $filename = $this->fileDir.'/index.html';
+                $filename = 'index.html';
             } else {
-                $filename = $this->fileDir;
+                switch( PHP_OS ) {
+                    case 'WINNT':
+                    case 'WIN32':
+                    case 'Windows':
+                        $pattern = $this->rePatterns['win'][1];
+                        break;
+                    case 'Linux':
+                    case 'Unix':
+                        $pattern = $this->rePatterns['unix'][2];
+                        break;
+                    default:
+                        echo $this->errorMassages[4];
+                        die ( 1 );
+                }
+                $filename = preg_replace( $pattern, null, $this->fileDir );
             }
         } else {
-            $pattern = '/\bhttps?:\/\/\b[a-zA-Z0-9.]*\/?/';
+            // Default action, if 'f' option is not specified
+            $pattern = $this->rePatterns['web'][1];
             $filename = preg_replace( $pattern, null, $this->fileURL );
             if ( $filename === '' ) {
                 $filename = 'index.html';
             }
         }
+
         return $filename;
     }
 
