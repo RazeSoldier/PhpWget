@@ -179,8 +179,8 @@ STR;
     public function download() {
         curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
-        $filename = $this->getFilename();
-        $download = file_put_contents( $filename, curl_exec( $this->curlResource ) );
+        $filedir = $this->getFileDir();
+        $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
         $this->displayConcludingWords($download);
     }
 
@@ -195,28 +195,28 @@ STR;
       }
 
       if ( !$check === false ) {
-        echo "{$this->getFilename()} successfully download to $targetDir\n";
+        echo "{$this->getFileDir()} successfully download to $targetDir\n";
       }
     }
 
     /**
-     * According to the URL to determine the file name.
+     * According to the URL to determine the file directory.
      */
-    private function getFilename() {
+    private function getFileDir() {
         if ( isset( $this->fileDir ) ) {
             if ( is_dir( $this->fileDir ) ) {
-                $filename = $this->fileDir.'/index.html';
+                $filedir = $this->fileDir.'/index.html';
             } else {
-                $filename = $this->fileDir;
+                $filedir = $this->fileDir;
             }
         } else {
             $pattern = '/\bhttps?:\/\/\b[a-zA-Z0-9.]*\/?/';
-            $filename = preg_replace( $pattern, null, $this->fileURL );
-            if ( $filename === '' ) {
-                $filename = 'index.html';
+            $filedir = preg_replace( $pattern, null, $this->fileURL );
+            if ( $filedir === '' ) {
+                $filedir = 'index.html';
             }
         }
-        return $filename;
+        return $filedir;
     }
 
     public function __destruct() {
