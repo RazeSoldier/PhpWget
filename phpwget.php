@@ -63,7 +63,8 @@ STR;
         1 => "[Notice] You have not typed 'u' option, the script exit.\n",
         2 => "[Notice] The URL you entered is not in the correct format, please check the URL you entered.\n",
         3 => "[Warning] You did not load curl extension, the script does not work.\n",
-        4 => "[Warning] PhpWget does not support your operating system.\n"
+        4 => "[Warning] PhpWget does not support your operating system.\n",
+        5 => "[Warning] This script must be run in cli mode."
         ];
 
     /**
@@ -88,9 +89,9 @@ STR;
     ];
 
     public function __construct() {
-        echo "PHP runs in cli mode.\n";
-
         $this->checkPHPEnvironment();
+
+        echo "PHP runs in cli mode.\n";
 
         $this->options = getopt( $this->optionIndex );
 
@@ -112,6 +113,11 @@ STR;
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
             echo $this->errorMassages[3];
+            die ( 1 );
+        }
+        // Check if this script is running in cli mode
+        if ( php_sapi_name() !== 'cli' ) {
+            echo $this->errorMassages[5];;
             die ( 1 );
         }
     }
