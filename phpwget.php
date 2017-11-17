@@ -89,9 +89,9 @@ STR;
     ];
 
     public function __construct() {
-        echo "PHP runs in cli mode.\n";
-
         $this->checkPHPEnvironment();
+
+        echo "PHP runs in cli mode.\n";
 
         $this->options = getopt( $this->optionIndex );
 
