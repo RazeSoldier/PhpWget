@@ -189,13 +189,13 @@ STR;
      */
     private function displayConcludingWords($check) {
       if ( isset( $this->fileDir ) ) {
-        $targetDir = $this->fileDir;
+        $targetDir = $this->getFileDir;
       } else {
         $targetDir = getcwd();
       }
 
       if ( !$check === false ) {
-        echo "{$this->getFileDir()} successfully download to $targetDir\n";
+        echo "{$this->getFileName()} successfully download to $targetDir\n";
       }
     }
 
@@ -217,6 +217,42 @@ STR;
             }
         }
         return $filedir;
+    }
+
+    /**
+     * According to the URL to determine the file name.
+     */
+    private function getFileName() {
+        if ( isset( $this->fileDir ) ) {
+            if ( is_dir( $this->fileDir ) ) {
+                $filename = 'index.html';
+            } else {
+                switch( PHP_OS ) {
+                    case 'WINNT':
+                    case 'WIN32':
+                    case 'Windows':
+                        $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
+                        break;
+                    case 'Linux':
+                    case 'Unix':
+                        $pattern = '/^\/?([a-zA-Z0-9]*\/)*/';
+                        break;
+                    default:
+                        echo $this->errorMassages[4];
+                        die ( 1 );
+                }
+                $filename = preg_replace( $pattern, null, $this->fileDir );
+            }
+        } else {
+            // Default action, if 'f' option is not specified
+            $pattern = '/\bhttps?:\/\/\b[a-zA-Z0-9.]*\/?/';
+            $filename = preg_replace( $pattern, null, $this->fileURL );
+            if ( $filename === '' ) {
+                $filename = 'index.html';
+            }
+        }
+
+        return $filename;
     }
 
     public function __destruct() {
