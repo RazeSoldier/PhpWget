@@ -117,7 +117,7 @@ STR;
         }
         // Check if this script is running in cli mode
         if ( php_sapi_name() !== 'cli' ) {
-            echo $this->errorMassages[5];;
+            echo $this->errorMassages[5];
             die ( 1 );
         }
     }
