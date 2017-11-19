@@ -230,15 +230,15 @@ STR;
      * Display concluding words, if the file successfully written to the file system
      */
     private function displayConcludingWords($check) {
-      if ( isset( $this->fileDir ) ) {
-        $targetDir = $this->fileDir;
-      } else {
-        $targetDir = getcwd();
-      }
+        if ( isset( $this->fileDir ) ) {
+            $targetDir = $this->fileDir;
+        } else {
+            $targetDir = getcwd();
+        }
 
-      if ( !$check === false ) {
-        echo "{$this->getFileName()} successfully download to $targetDir\n";
-      }
+        if ( !$check === false ) {
+            echo "{$this->getFileName()} successfully download to $targetDir\n";
+        }
     }
 
     /**
