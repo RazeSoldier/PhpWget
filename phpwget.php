@@ -84,7 +84,8 @@ STR;
             2 => '/^\/?([a-zA-Z0-9]*\/)*/' //Used to match the folder path
         ],
         'web' => [
-            1 => '/\bhttps?:\/{2}[a-zA-Z0-9.]*\/?\b/'
+            1 => '/\bhttps?:\/{2}[a-zA-Z0-9]*\.[a-zA-Z]*\/?\b/',
+            2 => '/\bhttps?:\/{2}\b/' // User to match 'http' protocol name 
         ]
     ];
 
@@ -147,10 +148,17 @@ STR;
      * Check the URL user entered
      */
     private function checkURL() {
+        // Auto-fill 'http' protocol name,
+        // if user entered the URL without the protocol name
+        $pattern[1] = $this->rePatterns['web'][1];
+        $pattern[2] = $this->rePatterns['web'][2];
+        $matchResult2 = preg_match( $pattern[2], $this->fileURL );
+        if ( $matchResult2 === 0 ) {
+            $this->fileURL = 'http://' . $this->fileURL;
+        }
         // Check the format of the URL is correct
-        $pattern = $this->rePatterns['web'][1];
-        $matchResult = preg_match( $pattern, $this->fileURL );
-        if ( $matchResult === 0 ) {
+        $matchResult1 = preg_match( $pattern[1], $this->fileURL );
+        if ( $matchResult1 === 0 ) {
             echo $this->errorMassages[2];
             die ( 1 );
         }
