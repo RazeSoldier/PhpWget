@@ -85,7 +85,7 @@ STR;
         ],
         'web' => [
             1 => '/\bhttps?:\/{2}[a-zA-Z0-9]*\.[a-zA-Z]*\/?\b/',
-            2 => '/\bhttps?:\/{2}\b/' // User to match 'http' protocol name 
+            2 => '/\bhttps?:\/{2}\b/' // User to match 'http' protocol name
         ]
     ];
 
