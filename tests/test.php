@@ -36,7 +36,7 @@ class test {
         1 => "[Warning] This script must be run in cli mode.\n",
         2 => "[Warning] You did not load curl extension, PhpWget will not work.\n",
         3 => "[Warning] PhpWget script does not exist or the working path is wrong, please check the script exists and make sure to call this script in the subordinate directory of the script.\n",
-        4 => "[Warning] 'System' function has been disabled, please enable it. This script needs this function.\n"
+        4 => "[Warning] 'exec' function has been disabled, please enable it. This script needs this function.\n"
         ];
 
     public function __construct() {
@@ -57,7 +57,7 @@ class test {
             echo $this->errorMassages[2];
             die ( 1 );
         }
-        if ( !function_exists( 'system' ) ) {
+        if ( !function_exists( 'exec' ) ) {
             echo $this->errorMassages[4];
             die ( 1 );
         }
@@ -73,4 +73,5 @@ class test {
         }
     }
 }
+
 $test = new \PhpWget\test();
