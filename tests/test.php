@@ -53,7 +53,11 @@ class test {
         ]
     ];
 
-    private $passMassage = "PhpWget feature is OK.\n";
+    private $passMassage = [
+        1 => "[Test 1/2 Pass] Test whether PhpWget can download files from Internet\n",
+        2 => "[Test 2/2 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
+        'final' => "\nPhpWget feature is OK.\n"
+    ];
 
     public function __construct() {
         $this->checkPHPEnvironment();
@@ -100,6 +104,8 @@ class test {
     }
 
     /**
+     * Test 1
+     *
      * Test whether PhpWget can download files from Internet
      */
     public function testDownloadFile() {
@@ -110,10 +116,12 @@ class test {
             die ( 1 );
         }
         $this->deleteTempFile( $this->tempFilePath );
-        echo $this->passMassage;
+        echo $this->passMassage[1];
     }
 
     /**
+     * Test 2
+     *
      * Test whether PhpWget can correctly download files containing multi-level domain URL
      */
     public function testDownloadMultlLevelDomainURL() {
@@ -124,10 +132,15 @@ class test {
             die ( 1 );
         }
         $this->deleteTempFile( $this->tempFilePath );
-        echo $this->passMassage;
+        echo $this->passMassage[2];
+    }
+
+    public function testEnd() {
+        echo $this->passMassage['final'];
     }
 }
 
 $test = new \PhpWget\test();
-$test->testDownloadFile();
-$test->testDownloadMultlLevelDomainURL();
+$test->testDownloadFile(); //Test whether PhpWget can download files from Internet
+$test->testDownloadMultlLevelDomainURL(); //Test whether PhpWget can correctly download files containing multi-level domain URL
+$test->testEnd();
