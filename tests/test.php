@@ -45,7 +45,8 @@ class test {
         3 => "[Warning] PhpWget script does not exist or the working path is wrong, please check the script exists and make sure to call this script in the subordinate directory of the script.\n",
         4 => "[Warning] 'exec' function has been disabled, please enable it. This script needs this function.\n",
         'error' => [
-            1 => "[Error] PhpWget can not download file from Internet.\n"
+            1 => "[Error] PhpWget can not download file from Internet.\n",
+            2 => "[Error] PhpWget can not correctly download files containing multi-level domain URL\n"
         ],
         'notice' => [
             1 => "[Notice] PhpWget can not remove temporary file.\n"
@@ -119,7 +120,7 @@ class test {
         exec( "php $this->testFilePath -uhttp://www.baidu.com" );
         $filename = 'index.html';
         if ( !file_exists( $filename ) ) {
-            echo $this->errorMassages['error'][1];
+            echo $this->errorMassages['error'][2];
             die ( 1 );
         }
         $this->deleteTempFile( $this->tempFilePath );
