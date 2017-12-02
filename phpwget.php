@@ -84,8 +84,9 @@ STR;
             2 => '/^\/?([a-zA-Z0-9]*\/)*/' //Used to match the folder path
         ],
         'web' => [
-            1 => '/\bhttps?:\/{2}[a-zA-Z0-9-]*\.[a-zA-Z]*\/?\b/',
-            2 => '/\bhttps?:\/{2}\b/' // User to match 'http' protocol name 
+            1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
+            2 => '/\bhttps?:\/{2}\b/', // User to match 'http' protocol name
+            3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'
         ]
     ];
 
@@ -225,8 +226,10 @@ STR;
                 $filedir = $this->fileDir;
             }
         } else {
-            $pattern = $this->rePatterns['web'][1];
-            $filedir = preg_replace( $pattern, null, $this->fileURL );
+            $pattern[1] = $this->rePatterns['web'][1];
+            $pattern[2] = $this->rePatterns['web'][3];
+            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
+            $filedir = preg_replace( $pattern[2], null, $urlFilename );
             if ( $filedir === '' ) {
                 $filedir = 'index.html';
             }
@@ -275,8 +278,10 @@ STR;
             }
         } else {
             // Default action, if 'f' option is not specified
-            $pattern = $this->rePatterns['web'][1];
-            $filename = preg_replace( $pattern, null, $this->fileURL );
+            $pattern[1] = $this->rePatterns['web'][1];
+            $pattern[2] = $this->rePatterns['web'][3];
+            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
+            $filename = preg_replace( $pattern[2], null, $urlFilename );
             if ( $filename === '' ) {
                 $filename = 'index.html';
             }
