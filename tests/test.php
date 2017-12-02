@@ -111,7 +111,22 @@ class test {
         $this->deleteTempFile( $this->tempFilePath );
         echo $this->passMassage;
     }
+
+    /**
+     * Test whether PhpWget can correctly download files containing multi-level domain URL
+     */
+    public function testDownloadMultlLevelDomainURL() {
+        exec( "php $this->testFilePath -uhttp://www.baidu.com" );
+        $filename = 'index.html';
+        if ( !file_exists( $filename ) ) {
+            echo $this->errorMassages['error'][1];
+            die ( 1 );
+        }
+        $this->deleteTempFile( $this->tempFilePath );
+        echo $this->passMassage;
+    }
 }
 
 $test = new \PhpWget\test();
 $test->testDownloadFile();
+$test->testDownloadMultlLevelDomainURL();
