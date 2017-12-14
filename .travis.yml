@@ -1,5 +1,7 @@
 language: php
 php:
   - '7.2.0'
+before_script:
+  - cd tests/
 script:
-  - cd tests && php test.php
+  - php test.php
