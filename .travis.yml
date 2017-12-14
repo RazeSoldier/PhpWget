@@ -2,4 +2,4 @@ language: php
 php:
   - '7.2.0'
 script:
-  - php tests/test.php
+  - cd tests && php test.php
