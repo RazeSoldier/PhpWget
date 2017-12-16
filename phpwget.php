@@ -135,7 +135,7 @@ STR;
      */
     private function shellOutput($input, $color = 'red') {
         if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
-            $output = $this->setShellColor( $input ) . "\n";
+            $output = $this->setShellColor( $input,$color ) . "\n";
         } else {
             $output = $input . "\n";
         }
