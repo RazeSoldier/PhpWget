@@ -125,7 +125,7 @@ STR;
      * @param string $color
      * @return string
      */
-    private function setShellColor($input, $color = 'red') {
+    private function setShellColor($input, $color) {
         $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
         return $output;
     }
@@ -133,7 +133,7 @@ STR;
     /**
      * Output
      */
-    private function shellOutput($input) {
+    private function shellOutput($input, $color = 'red') {
         if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
             $output = $this->setShellColor( $input ) . "\n";
         } else {
