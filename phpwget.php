@@ -60,12 +60,12 @@ STR;
      * @var array $errorMassage
      */
     private $errorMassages = [
-        1 => "[Notice] You have not typed 'u' option, the script exit.\n",
-        2 => "[Notice] The URL you entered is not in the correct format, please check the URL you entered.\n",
-        3 => "[Warning] You did not load curl extension, the script does not work.\n",
-        4 => "[Warning] PhpWget does not support your operating system.\n",
-        5 => "[Warning] This script must be run in cli mode."
-        ];
+        1 => '[Notice] You have not typed \'u\' option, the script exit.',
+        2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
+        3 => '[Warning] You did not load curl extension, the script does not work.',
+        4 => '[Warning] PhpWget does not support your operating system.',
+        5 => '[Warning] This script must be run in cli mode.'
+    ];
 
     /**
      * @var resource $curlResource
@@ -86,7 +86,15 @@ STR;
         'web' => [
             1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
             2 => '/\bhttps?:\/{2}\b/', // User to match 'http' protocol name
-            3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'        ]
+            3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'
+        ]
+    ];
+
+    /**
+     * @var array $shellColor Store the color code
+     */
+    private $shellColor = [
+        'red' => '31m'
     ];
 
     public function __construct() {
@@ -109,16 +117,42 @@ STR;
     }
 
     /**
+     * Render the font color of the output
+     *
+     * downloadFile::shellOutput callback function
+     *
+     * @param string $input
+     * @param string $color
+     * @return string
+     */
+    private function setShellColor($input, $color = 'red') {
+        $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
+        return $output;
+    }
+
+    /**
+     * Output
+     */
+    private function shellOutput($input) {
+        if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
+            $output = $this->setShellColor( $input ) . "\n";
+        } else {
+            $output = $input . "\n";
+        }
+        echo $output;
+    }
+
+    /**
      * Check if the server meets the requirements
      */
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
-            echo $this->errorMassages[3];
+            $this->shellOutput( $this->errorMassages[3] );
             die ( 1 );
         }
         // Check if this script is running in cli mode
         if ( php_sapi_name() !== 'cli' ) {
-            echo $this->errorMassages[5];
+            $this->shellOutput( $this->errorMassages[5] );
             die ( 1 );
         }
     }
@@ -138,7 +172,7 @@ STR;
      */
     private function checkOptions() {
         if ( !isset( $this->options['u'] ) ) {
-            echo $this->errorMassages[1];
+            $this->shellOutput( $this->errorMassages[1] );
             echo $this->helpMassage;
             die ( 1 );
         }
@@ -159,7 +193,7 @@ STR;
         // Check the format of the URL is correct
         $matchResult1 = preg_match( $pattern[1], $this->fileURL );
         if ( $matchResult1 === 0 ) {
-            echo $this->errorMassages[2];
+            $this->shellOutput( $this->errorMassages[2] );
             die ( 1 );
         }
     }
@@ -180,7 +214,7 @@ STR;
                     $pattern = $this->rePatterns['unix'][1];
                     break;
                 default:
-                    echo $this->errorMassages[4];
+                    $this->shellOutput( $this->errorMassages[4] );
                     die ( 1 );
             } //end switch
         } else {
@@ -195,14 +229,15 @@ STR;
                     $pattern = $this->rePatterns['unix'][2];
                     break;
                 default:
-                    echo $this->errorMassages[4];
+                    $this->shellOutput( $this->errorMassages[4] );
                     die ( 1 );
             } //end switch
         } //end if
         preg_match( $pattern, $this->fileDir, $matches);
 
         if ( !is_writable( $matches[0] ) ) {
-            die ( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory\n" );
+            $this->shellOutput( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory" );
+            die ( 1 );
         }
     }
 
@@ -270,7 +305,7 @@ STR;
                         $pattern = $this->rePatterns['unix'][2];
                         break;
                     default:
-                        echo $this->errorMassages[4];
+                        $this->shellOutput( $this->errorMassages[4] );
                         die ( 1 );
                 }
                 $filename = preg_replace( $pattern, null, $this->fileDir );
