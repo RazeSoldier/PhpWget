@@ -94,7 +94,8 @@ STR;
      * @var array $shellColor Store the color code
      */
     private $shellColor = [
-        'red' => '31m'
+        'red' => '31m',
+        'green' => '32m'
     ];
 
     public function __construct() {
@@ -282,7 +283,7 @@ STR;
         }
 
         if ( !$check === false ) {
-            echo "{$this->getFileName()} successfully download to $targetDir\n";
+            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir\n", 'green');
         }
     }
 
