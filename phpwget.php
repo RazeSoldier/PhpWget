@@ -31,6 +31,15 @@ class downloadFile {
     private $optionIndex = 'hu:f::';
 
     /**
+     * Store long option elements
+     *
+     * @var array $longopts
+     */
+    private $longopts = [
+
+    ];
+
+    /**
      * @var array $options
      */
     private $options;
