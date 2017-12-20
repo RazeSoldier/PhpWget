@@ -112,7 +112,7 @@ STR;
 
         echo "PHP runs in cli mode.\n";
 
-        $this->options = getopt( $this->optionIndex );
+        $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
         $this->checkOptions();
