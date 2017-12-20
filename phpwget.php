@@ -341,5 +341,22 @@ STR;
     }
 }
 
+class unzip {
+    /**
+     * @var string $archiveName
+     */
+    private $archiveName;
+
+    public function __construct($archiveName) {
+        $this->checkPHPEnvironment();
+        $this->archiveName = $archiveName;
+    }
+    /**
+     * Check if the server meets the requirements
+     */
+    private function checkPHPEnvironment() {
+    }
+}
+
 $downloadFile = new \PhpWget\downloadFile();
 $downloadFile->download();
