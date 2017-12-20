@@ -36,7 +36,7 @@ class downloadFile {
      * @var array $longopts
      */
     private $longopts = [
-
+        'UZ' // Command PhpWget extract the downloaded archive
     ];
 
     /**
