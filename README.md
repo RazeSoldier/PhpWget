@@ -1,4 +1,4 @@
-# PhpWget - Written in php download tools
+# PhpWget - Written in php download tool
 
 [![Build Status](https://travis-ci.org/RazeSoldier/PhpWget.svg?branch=master)](https://travis-ci.org/RazeSoldier/PhpWget)
 
