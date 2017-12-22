@@ -1,7 +1,7 @@
 <?php
-/** 
+/**
  * This script can be download file.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -16,7 +16,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
- * 
+ *
  * @file
  */
 
@@ -59,29 +59,53 @@ STR;
     /**
      * @var array $errorMassage
      */
-    private $errorMassages = array(
-        1 => "[Notice] You have not typed 'u' option, the script exit.\n",
-        2 => "[Notice] The URL you entered is not in the correct format, please check the URL you entered.\n",
-        3 => "[Warning] You did not load curl extension, the script does not work.\n",
-        4 => "[Warning] PhpWget does not support your operating system.\n"
-        );
+    private $errorMassages = [
+        1 => '[Notice] You have not typed \'u\' option, the script exit.',
+        2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
+        3 => '[Warning] You did not load curl extension, the script does not work.',
+        4 => '[Warning] PhpWget does not support your operating system.',
+        5 => '[Warning] This script must be run in cli mode.'
+    ];
 
     /**
      * @var resource $curlResource
      */
     private $curlResource;
 
-    public function __construct() {
-        echo "PHP runs in cli mode.\n";
+    /**
+     * @var array $rePatterns Stores regular expression pattenrs
+     */
+    private $rePatterns = [
+        'win' => [
+            1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/'
+        ],
+        'unix' => [
+            1 => '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/', //Used to match the full path
+            2 => '/^\/?([a-zA-Z0-9]*\/)*/' //Used to match the folder path
+        ],
+        'web' => [
+            1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
+            2 => '/\bhttps?:\/{2}\b/', // User to match 'http' protocol name
+            3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'
+        ]
+    ];
 
+    /**
+     * @var array $shellColor Store the color code
+     */
+    private $shellColor = [
+        'red' => '31m',
+        'green' => '32m'
+    ];
+
+    public function __construct() {
         $this->checkPHPEnvironment();
+
+        echo "PHP runs in cli mode.\n";
 
         $this->options = getopt( $this->optionIndex );
 
-        if ( isset( $this->options['h'] ) ) {
-            echo $this->helpMassage;
-            die ( 1 );
-        }
+        $this->displayHelpMassage();
         $this->checkOptions();
         $this->fileURL = $this->options['u'];
         if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
@@ -94,11 +118,52 @@ STR;
     }
 
     /**
+     * Render the font color of the output
+     *
+     * downloadFile::shellOutput callback function
+     *
+     * @param string $input
+     * @param string $color
+     * @return string
+     */
+    private function setShellColor($input, $color) {
+        $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
+        return $output;
+    }
+
+    /**
+     * Output
+     */
+    private function shellOutput($input, $color = 'red') {
+        if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
+            $output = $this->setShellColor( $input,$color ) . "\n";
+        } else {
+            $output = $input . "\n";
+        }
+        echo $output;
+    }
+
+    /**
      * Check if the server meets the requirements
      */
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
-            echo $this->errorMassages[3];
+            $this->shellOutput( $this->errorMassages[3] );
+            die ( 1 );
+        }
+        // Check if this script is running in cli mode
+        if ( php_sapi_name() !== 'cli' ) {
+            $this->shellOutput( $this->errorMassages[5] );
+            die ( 1 );
+        }
+    }
+
+    /**
+     * Display help massage, if there is 'u' option
+     */
+    private function displayHelpMassage() {
+        if ( isset( $this->options['h'] ) ) {
+            echo $this->helpMassage;
             die ( 1 );
         }
     }
@@ -108,7 +173,7 @@ STR;
      */
     private function checkOptions() {
         if ( !isset( $this->options['u'] ) ) {
-            echo $this->errorMassages[1];
+            $this->shellOutput( $this->errorMassages[1] );
             echo $this->helpMassage;
             die ( 1 );
         }
@@ -118,11 +183,18 @@ STR;
      * Check the URL user entered
      */
     private function checkURL() {
+        // Auto-fill 'http' protocol name,
+        // if user entered the URL without the protocol name
+        $pattern[1] = $this->rePatterns['web'][1];
+        $pattern[2] = $this->rePatterns['web'][2];
+        $matchResult2 = preg_match( $pattern[2], $this->fileURL );
+        if ( $matchResult2 === 0 ) {
+            $this->fileURL = 'http://' . $this->fileURL;
+        }
         // Check the format of the URL is correct
-        $pattern = '/\bhttps?:\/{2}[a-zA-Z0-9.]*\b/';
-        $i = preg_match( $pattern, $this->fileURL );
-        if ( $i === 0 ) {
-            echo $this->errorMassages[2];
+        $matchResult1 = preg_match( $pattern[1], $this->fileURL );
+        if ( $matchResult1 === 0 ) {
+            $this->shellOutput( $this->errorMassages[2] );
             die ( 1 );
         }
     }
@@ -132,55 +204,124 @@ STR;
      */
     private function checkFileDir() {
         if ( is_dir( $this->fileDir ) ) {
-            if ( PHP_OS === 'WINNT' or PHP_OS === 'WIN32' or PHP_OS === 'Windows') {
-                $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*[a-zA-Z0-9\s]*/';
-            } elseif ( PHP_OS === 'Linux' or PHP_OS === 'Unix') {
-                $pattern = '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/';
-            } else {
-                echo $this->errorMassages[4];
-                die ( 1 );
-            }
+            switch( PHP_OS ) {
+                case 'WINNT':
+                case 'WIN32':
+                case 'Windows':
+                    $pattern = $this->rePatterns['win'][1];
+                    break;
+                case 'Linux':
+                case 'Unix':
+                    $pattern = $this->rePatterns['unix'][1];
+                    break;
+                default:
+                    $this->shellOutput( $this->errorMassages[4] );
+                    die ( 1 );
+            } //end switch
         } else {
-            if ( PHP_OS === 'WINNT' or PHP_OS === 'WIN32' or PHP_OS === 'Windows') {
-                $pattern = '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/';
-            } elseif ( PHP_OS === 'Linux' or PHP_OS === 'Unix') {
-                $pattern = '/^\/?([a-zA-Z0-9]*\/)*/';
-            } else {
-                echo $this->errorMassages[4];
-                die ( 1 );
-            }
-        }
+            switch( PHP_OS ) {
+                case 'WINNT':
+                case 'WIN32':
+                case 'Windows':
+                    $pattern = $this->rePatterns['win'][1];
+                    break;
+                case 'Linux':
+                case 'Unix':
+                    $pattern = $this->rePatterns['unix'][2];
+                    break;
+                default:
+                    $this->shellOutput( $this->errorMassages[4] );
+                    die ( 1 );
+            } //end switch
+        } //end if
         preg_match( $pattern, $this->fileDir, $matches);
 
         if ( !is_writable( $matches[0] ) ) {
-            die ( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory\n" );
+            $this->shellOutput( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory" );
+            die ( 1 );
         }
     }
 
     public function download() {
         curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
-        $filename = $this->getFilename();
-        file_put_contents( $filename, curl_exec( $this->curlResource ) );
+        $filedir = $this->getFileDir();
+        $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
+        $this->displayConcludingWords($download);
+    }
+
+    /**
+     * According to the URL to determine the file directory.
+     */
+    private function getFileDir() {
+        if ( isset( $this->fileDir ) ) {
+            if ( is_dir( $this->fileDir ) ) {
+                $filedir = $this->fileDir.'/index.html';
+            } else {
+                $filedir = $this->fileDir;
+            }
+        } else {
+            $pattern[1] = $this->rePatterns['web'][1];
+            $pattern[2] = $this->rePatterns['web'][3];
+            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
+            $filedir = preg_replace( $pattern[2], null, $urlFilename );
+            if ( $filedir === '' ) {
+                $filedir = 'index.html';
+            }
+        }
+        return $filedir;
+    }
+
+    /**
+     * Display concluding words, if the file successfully written to the file system
+     */
+    private function displayConcludingWords($check) {
+        if ( isset( $this->fileDir ) ) {
+            $targetDir = $this->fileDir;
+        } else {
+            $targetDir = getcwd();
+        }
+
+        if ( !$check === false ) {
+            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir\n", 'green');
+        }
     }
 
     /**
      * According to the URL to determine the file name.
      */
-    private function getFilename() {
-	   if ( isset( $this->fileDir ) ) {
+    private function getFileName() {
+        if ( isset( $this->fileDir ) ) {
             if ( is_dir( $this->fileDir ) ) {
-                $filename = $this->fileDir.'/index.html';
+                $filename = 'index.html';
             } else {
-                $filename = $this->fileDir;
+                switch( PHP_OS ) {
+                    case 'WINNT':
+                    case 'WIN32':
+                    case 'Windows':
+                        $pattern = $this->rePatterns['win'][1];
+                        break;
+                    case 'Linux':
+                    case 'Unix':
+                        $pattern = $this->rePatterns['unix'][2];
+                        break;
+                    default:
+                        $this->shellOutput( $this->errorMassages[4] );
+                        die ( 1 );
+                }
+                $filename = preg_replace( $pattern, null, $this->fileDir );
             }
         } else {
-            $pattern = '/\bhttps?:\/\/\b[a-zA-Z0-9.]*\/?/';
-            $filename = preg_replace( $pattern, null, $this->fileURL );
+            // Default action, if 'f' option is not specified
+            $pattern[1] = $this->rePatterns['web'][1];
+            $pattern[2] = $this->rePatterns['web'][3];
+            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
+            $filename = preg_replace( $pattern[2], null, $urlFilename );
             if ( $filename === '' ) {
                 $filename = 'index.html';
             }
         }
+
         return $filename;
     }
 
