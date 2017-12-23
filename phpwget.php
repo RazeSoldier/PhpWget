@@ -261,7 +261,7 @@ STR;
         $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
         $this->displayConcludingWords($download);
 
-        if ( $this->options['UZ'] === false) {
+        if ( isset($this->options['UZ'] ) ) {
             $unZip = new unZip( $this->getFileName() );
             $unZip->unZip();
         }
