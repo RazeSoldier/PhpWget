@@ -22,6 +22,9 @@
 
 namespace PhpWget;
 
+/**
+ * @class Main class
+ */
 class downloadFile {
     /**
      * Each character in this string will be used as option characters
@@ -346,6 +349,9 @@ STR;
     }
 }
 
+/**
+ * @class Used to extract the archive
+ */
 class unzip {
     /**
      * @var string $archiveName
