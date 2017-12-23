@@ -257,6 +257,11 @@ STR;
         $filedir = $this->getFileDir();
         $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
         $this->displayConcludingWords($download);
+
+        if ( $this->options['UZ'] === false) {
+            $unZip = new unZip( $this->getFileName() );
+            $unZip->unZip();
+        }
     }
 
     /**
@@ -347,6 +352,11 @@ class unzip {
      */
     private $archiveName;
 
+    /**
+     * @var boolean $pharLoaded
+     */
+    private $pharLoaded;
+
     public function __construct($archiveName) {
         $this->checkPHPEnvironment();
         $this->archiveName = $archiveName;
@@ -355,6 +365,21 @@ class unzip {
      * Check if the server meets the requirements
      */
     private function checkPHPEnvironment() {
+        if ( !extension_loaded( 'phar' ) ) {
+            $this->pharLoaded = false;
+        }
+    }
+
+    /**
+     * Extract the archive
+     */
+    public function unZip() {
+        if ( $this->pharLoaded === false ) {
+            echo '[Warning] You did not load phar extension, PhpWget can\'t extract archive.';
+        } else {
+            $pharData = new \PharData( $this->archiveName );
+            $pharData->extractTo( '.' );
+        }
     }
 }
 
