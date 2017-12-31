@@ -155,6 +155,7 @@ STR;
 
     public function __construct() {
         $this->checkPHPEnvironment();
+        echo "PHP runs in cli mode.\n";
     }
 }
 
@@ -169,10 +170,6 @@ class downloadFile extends PhpWget {
     private $curlResource;
 
     public function __construct() {
-        $this->checkPHPEnvironment();
-
-        echo "PHP runs in cli mode.\n";
-
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
