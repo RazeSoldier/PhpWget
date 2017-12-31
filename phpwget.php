@@ -25,42 +25,40 @@ namespace PhpWget;
 /**
  * @class Main class
  */
-class downloadFile {
+abstract class PhpWget {
     /**
      * Each character in this string will be used as option characters
-     *
      * @var string $optionIndex
      */
-    private $optionIndex = 'hu:f::';
+    protected $optionIndex = 'hu:f::';
 
     /**
      * Store long option elements
-     *
      * @var array $longopts
      */
-    private $longopts = [
+    protected $longopts = [
         'UZ' // Command PhpWget extract the downloaded archive
     ];
 
     /**
      * @var array $options
      */
-    private $options;
+    protected $options;
 
     /**
      * @var string|null $fileURL
      */
-    private $fileURL;
+    protected $fileURL;
 
     /**
      * @var string|null $fileDir
      */
-    private $fileDir;
+    protected $fileDir;
 
     /**
      * @var string $helpMassage
      */
-    private $helpMassage = <<<STR
+    protected $helpMassage = <<<STR
 Usage: php <this script name> -u=<file URL> [options]
    php <this script name> -h
 
@@ -71,7 +69,7 @@ STR;
     /**
      * @var array $errorMassage
      */
-    private $errorMassages = [
+    protected $errorMassages = [
         1 => '[Notice] You have not typed \'u\' option, the script exit.',
         2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
         3 => '[Warning] You did not load curl extension, the script does not work.',
@@ -80,14 +78,10 @@ STR;
     ];
 
     /**
-     * @var resource $curlResource
+     * Stores regular expression pattenrs
+     * @var array $rePatterns
      */
-    private $curlResource;
-
-    /**
-     * @var array $rePatterns Stores regular expression pattenrs
-     */
-    private $rePatterns = [
+    protected $rePatterns = [
         'win' => [
             1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/'
         ],
@@ -103,12 +97,72 @@ STR;
     ];
 
     /**
+     * @var bool|null $pharLoaded
+     */
+    protected $pharLoaded;
+
+    /**
      * @var array $shellColor Store the color code
      */
-    private $shellColor = [
+    protected $shellColor = [
         'red' => '31m',
         'green' => '32m'
     ];
+
+    /**
+     * Render the font color of the output
+     *
+     * downloadFile::shellOutput callback function
+     *
+     * @param string $input
+     * @param string $color
+     * @return string
+     */
+    protected function setShellColor($input, $color) {
+        $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
+        return $output;
+    }
+
+    /**
+     * Output
+     */
+    protected function shellOutput($input, $color = 'red') {
+        if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
+            $output = $this->setShellColor( $input,$color ) . "\n";
+        } else {
+            $output = $input . "\n";
+        }
+        echo $output;
+    }
+
+    /**
+     * Check if the server meets the requirements
+     */
+    static public function checkPHPEnvironment() {
+        if ( !extension_loaded( 'curl' ) ) {
+            $this->shellOutput( $this->errorMassages[3] );
+            die ( 1 );
+        }
+        // Check if this script is running in cli mode
+        if ( php_sapi_name() !== 'cli' ) {
+            $this->shellOutput( $this->errorMassages[5] );
+            die ( 1 );
+        }
+        if ( !extension_loaded( 'phar' ) ) {
+            $this->pharLoaded = false;
+        }
+    }
+}
+
+/**
+ * Used to download file
+ * @class Download action class
+ */
+class downloadFile extends PhpWget {
+    /**
+     * @var resource $curlResource
+     */
+    private $curlResource;
 
     public function __construct() {
         $this->checkPHPEnvironment();
@@ -127,47 +181,6 @@ STR;
         $this->checkURL();
 
         $this->curlResource = curl_init( $this->fileURL );
-    }
-
-    /**
-     * Render the font color of the output
-     *
-     * downloadFile::shellOutput callback function
-     *
-     * @param string $input
-     * @param string $color
-     * @return string
-     */
-    private function setShellColor($input, $color) {
-        $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
-        return $output;
-    }
-
-    /**
-     * Output
-     */
-    private function shellOutput($input, $color = 'red') {
-        if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
-            $output = $this->setShellColor( $input,$color ) . "\n";
-        } else {
-            $output = $input . "\n";
-        }
-        echo $output;
-    }
-
-    /**
-     * Check if the server meets the requirements
-     */
-    private function checkPHPEnvironment() {
-        if ( !extension_loaded( 'curl' ) ) {
-            $this->shellOutput( $this->errorMassages[3] );
-            die ( 1 );
-        }
-        // Check if this script is running in cli mode
-        if ( php_sapi_name() !== 'cli' ) {
-            $this->shellOutput( $this->errorMassages[5] );
-            die ( 1 );
-        }
     }
 
     /**
@@ -350,30 +363,17 @@ STR;
 }
 
 /**
+ * Used to extract the archive
  * @class Used to extract the archive
  */
-class unzip {
+class unzip extends PhpWget {
     /**
      * @var string $archiveName
      */
     private $archiveName;
 
-    /**
-     * @var boolean $pharLoaded
-     */
-    private $pharLoaded;
-
     public function __construct($archiveName) {
-        $this->checkPHPEnvironment();
         $this->archiveName = $archiveName;
-    }
-    /**
-     * Check if the server meets the requirements
-     */
-    private function checkPHPEnvironment() {
-        if ( !extension_loaded( 'phar' ) ) {
-            $this->pharLoaded = false;
-        }
     }
 
     /**
@@ -389,5 +389,6 @@ class unzip {
     }
 }
 
+PhpWget::checkPHPEnvironment();
 $downloadFile = new \PhpWget\downloadFile();
 $downloadFile->download();
