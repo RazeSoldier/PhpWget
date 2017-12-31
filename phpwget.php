@@ -74,7 +74,8 @@ STR;
         2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
         3 => '[Warning] You did not load curl extension, the script does not work.',
         4 => '[Warning] PhpWget does not support your operating system.',
-        5 => '[Warning] This script must be run in cli mode.'
+        5 => '[Warning] This script must be run in cli mode.',
+        6 => '[Error] PhpWget can not download file.'
     ];
 
     /**
@@ -118,7 +119,7 @@ STR;
      * @param string $color
      * @return string
      */
-    protected function setShellColor($input, $color) {
+    private function setShellColor($input, $color) {
         $output = "\033[{$this->shellColor[$color]}" . $input . " \033[0m";
         return $output;
     }
@@ -272,6 +273,10 @@ class downloadFile extends PhpWget {
     public function download() {
         curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
+        if ( !curl_exec( $this->curlResource ) ) {
+            $this->shellOutput( $this->errorMassages[6], 'red' );
+            die ( 1 );
+        }
         $filedir = $this->getFileDir();
         $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
         $this->displayConcludingWords($download);
