@@ -91,7 +91,7 @@ STR;
         ],
         'web' => [
             1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
-            2 => '/\bhttps?:\/{2}\b/', // User to match 'http' protocol name
+            2 => '/\bhttps?:\/{2}\b/', // Used to match 'http' protocol name
             3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'
         ]
     ];
@@ -209,20 +209,20 @@ class downloadFile extends PhpWget {
      * Check the URL user entered
      */
     private function checkURL() {
-        // Auto-fill 'http' protocol name,
-        // if user entered the URL without the protocol name
         $pattern[1] = $this->rePatterns['web'][1];
         $pattern[2] = $this->rePatterns['web'][2];
-        $matchResult2 = preg_match( $pattern[2], $this->fileURL );
 
+        // Auto-fill 'http' protocol name,
+        // if user entered the URL without the protocol name
+        $matchResult2 = preg_match( $pattern[2], $this->fileURL );
+        if ( $matchResult2 === 0 ) {
+            $this->fileURL = 'http://' . $this->fileURL;
+        }
         // Check the format of the URL is correct
         $matchResult1 = preg_match( $pattern[1], $this->fileURL );
         if ( $matchResult1 === 0 ) {
             $this->shellOutput( $this->errorMassages[2] );
             die ( 1 );
-        }
-        if ( $matchResult2 === 0 ) {
-            $this->fileURL = 'http://' . $this->fileURL;
         }
     }
 
