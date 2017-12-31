@@ -214,14 +214,15 @@ class downloadFile extends PhpWget {
         $pattern[1] = $this->rePatterns['web'][1];
         $pattern[2] = $this->rePatterns['web'][2];
         $matchResult2 = preg_match( $pattern[2], $this->fileURL );
-        if ( $matchResult2 === 0 ) {
-            $this->fileURL = 'http://' . $this->fileURL;
-        }
+
         // Check the format of the URL is correct
         $matchResult1 = preg_match( $pattern[1], $this->fileURL );
         if ( $matchResult1 === 0 ) {
             $this->shellOutput( $this->errorMassages[2] );
             die ( 1 );
+        }
+        if ( $matchResult2 === 0 ) {
+            $this->fileURL = 'http://' . $this->fileURL;
         }
     }
 
