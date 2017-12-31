@@ -22,6 +22,9 @@
 
 namespace PhpWget;
 
+/**
+ * @class Main class
+ */
 class downloadFile {
     /**
      * Each character in this string will be used as option characters
@@ -29,6 +32,15 @@ class downloadFile {
      * @var string $optionIndex
      */
     private $optionIndex = 'hu:f::';
+
+    /**
+     * Store long option elements
+     *
+     * @var array $longopts
+     */
+    private $longopts = [
+        'UZ' // Command PhpWget extract the downloaded archive
+    ];
 
     /**
      * @var array $options
@@ -103,7 +115,7 @@ STR;
 
         echo "PHP runs in cli mode.\n";
 
-        $this->options = getopt( $this->optionIndex );
+        $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
         $this->checkOptions();
@@ -248,6 +260,11 @@ STR;
         $filedir = $this->getFileDir();
         $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
         $this->displayConcludingWords($download);
+
+        if ( isset($this->options['UZ'] ) ) {
+            $unZip = new unZip( $this->getFileName() );
+            $unZip->unZip();
+        }
     }
 
     /**
@@ -328,6 +345,46 @@ STR;
     public function __destruct() {
         if ( is_resource( $this->curlResource ) ) {
             curl_close( $this->curlResource );
+        }
+    }
+}
+
+/**
+ * @class Used to extract the archive
+ */
+class unzip {
+    /**
+     * @var string $archiveName
+     */
+    private $archiveName;
+
+    /**
+     * @var boolean $pharLoaded
+     */
+    private $pharLoaded;
+
+    public function __construct($archiveName) {
+        $this->checkPHPEnvironment();
+        $this->archiveName = $archiveName;
+    }
+    /**
+     * Check if the server meets the requirements
+     */
+    private function checkPHPEnvironment() {
+        if ( !extension_loaded( 'phar' ) ) {
+            $this->pharLoaded = false;
+        }
+    }
+
+    /**
+     * Extract the archive
+     */
+    public function unZip() {
+        if ( $this->pharLoaded === false ) {
+            echo '[Warning] You did not load phar extension, PhpWget can\'t extract archive.';
+        } else {
+            $pharData = new \PharData( $this->archiveName );
+            $pharData->extractTo( '.' );
         }
     }
 }
