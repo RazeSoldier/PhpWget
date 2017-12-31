@@ -25,7 +25,7 @@ namespace PhpWget;
 /**
  * @class Main class
  */
-abstract class PhpWget {
+class PhpWget {
     /**
      * Each character in this string will be used as option characters
      * @var string $optionIndex
@@ -138,7 +138,7 @@ STR;
     /**
      * Check if the server meets the requirements
      */
-    static public function checkPHPEnvironment() {
+    private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
             $this->shellOutput( $this->errorMassages[3] );
             die ( 1 );
@@ -151,6 +151,10 @@ STR;
         if ( !extension_loaded( 'phar' ) ) {
             $this->pharLoaded = false;
         }
+    }
+
+    public function __construct() {
+        $this->checkPHPEnvironment();
     }
 }
 
@@ -389,6 +393,6 @@ class unzip extends PhpWget {
     }
 }
 
-PhpWget::checkPHPEnvironment();
+$PhpWget = new PhpWget();
 $downloadFile = new \PhpWget\downloadFile();
 $downloadFile->download();
