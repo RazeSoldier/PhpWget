@@ -35,6 +35,7 @@ class test {
      * @var string $testFilePath
      */
     private $tempFilePath = [
+        1 => 'index.html',
         2 => 'index.html',
         3 => 'v0.1.tar.gz'
     ];
@@ -120,7 +121,7 @@ class test {
             echo $this->errorMassages['error'][1];
             die ( 1 );
         }
-        $this->deleteTempFile( $this->tempFilePath );
+        $this->deleteTempFile( $this->tempFilePath[1] );
         echo $this->passMassage[1];
     }
 
