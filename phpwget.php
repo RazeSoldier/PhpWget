@@ -77,7 +77,8 @@ STR;
         3 => '[Warning] You did not load curl extension, the script does not work.',
         4 => '[Warning] PhpWget does not support your operating system.',
         5 => '[Warning] This script must be run in cli mode.',
-        6 => '[Error] PhpWget can not download file.'
+        6 => '[Error] PhpWget can not download file.',
+        7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.'
     ];
 
     /**
@@ -131,7 +132,7 @@ STR;
      */
     protected function shellOutput($input, $color = 'red') {
         if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
-            $output = $this->setShellColor( $input,$color ) . "\n";
+            $output = $this->setShellColor( $input, $color ) . "\n";
         } else {
             $output = $input . "\n";
         }
@@ -400,7 +401,7 @@ class unzip extends PhpWget {
      */
     public function unZip() {
         if ( $this->pharLoaded === false ) {
-            echo '[Warning] You did not load phar extension, PhpWget can\'t extract archive.';
+            $this->shellOutput( $this->errorMassages[7] );
         } else {
             $pharData = new \PharData( $this->archiveName );
             $pharData->extractTo( '.' );
