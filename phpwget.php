@@ -63,7 +63,9 @@ Usage: php <this script name> -u=<file URL> [options]
    php <this script name> -h
 
   -f The file path you want to save, by default it will be saved to the current working directory
-  -h This help\n
+  -h This help
+
+  --UZ Extract the archive after download\n
 STR;
 
     /**
