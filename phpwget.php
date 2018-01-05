@@ -272,9 +272,19 @@ class downloadFile extends PhpWget {
         }
     }
 
+    /**
+     * Set some option for a cURL transfer
+     */
+    private function setCurlOpt() {
+        curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true );
+        // Stop cURL from verifying the peer's certificate
+        curl_setopt( $this->curlResource, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $this->curlResource, CURLOPT_FOLLOWLOCATION, true );
+    }
+
     public function download() {
-        curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
+        $this->setCurlOpt();
         if ( !curl_exec( $this->curlResource ) ) {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
@@ -322,7 +332,7 @@ class downloadFile extends PhpWget {
         }
 
         if ( !$check === false ) {
-            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir\n", 'green');
+            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir", 'green');
         }
     }
 
