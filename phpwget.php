@@ -330,7 +330,7 @@ class downloadFile extends PhpWget {
         }
 
         if ( !$check === false ) {
-            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir\n", 'green');
+            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir", 'green');
         }
     }
 
