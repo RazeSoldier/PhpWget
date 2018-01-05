@@ -278,6 +278,7 @@ class downloadFile extends PhpWget {
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true );
         // Stop cURL from verifying the peer's certificate
         curl_setopt( $this->curlResource, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $this->curlResource, CURLOPT_FOLLOWLOCATION, true );
     }
 
     public function download() {
