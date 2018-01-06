@@ -34,7 +34,11 @@ class test {
      *
      * @var string $testFilePath
      */
-    private $tempFilePath = 'index.html';
+    private $tempFilePath = [
+        1 => 'index.html',
+        2 => 'index.html',
+        3 => 'v0.1.tar.gz'
+    ];
 
     /**
      * @var array $errorMassages
@@ -46,7 +50,8 @@ class test {
         4 => "[Warning] 'exec' function has been disabled, please enable it. This script needs this function.\n",
         'error' => [
             1 => "[Error] PhpWget can not download file from Internet.\n",
-            2 => "[Error] PhpWget can not correctly download files containing multi-level domain URL\n"
+            2 => "[Error] PhpWget can not correctly download files containing multi-level domain URL.\n",
+            3 => "[Error] PhpWget can not follow the redirect to download.\n"
         ],
         'notice' => [
             1 => "[Notice] PhpWget can not remove temporary file.\n"
@@ -54,8 +59,9 @@ class test {
     ];
 
     private $passMassage = [
-        1 => "[Test 1/2 Pass] Test whether PhpWget can download files from Internet\n",
-        2 => "[Test 2/2 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
+        1 => "[Test 1/3 Pass] Test whether PhpWget can download files from Internet\n",
+        2 => "[Test 2/3 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
+        3 => "[Test 3/3 Pass] Test whether PhpWget can follow the redirect to download file.",
         'final' => "\nPhpWget feature is OK.\n"
     ];
 
@@ -115,7 +121,7 @@ class test {
             echo $this->errorMassages['error'][1];
             die ( 1 );
         }
-        $this->deleteTempFile( $this->tempFilePath );
+        $this->deleteTempFile( $this->tempFilePath[1] );
         echo $this->passMassage[1];
     }
 
@@ -131,8 +137,24 @@ class test {
             echo $this->errorMassages['error'][2];
             die ( 1 );
         }
-        $this->deleteTempFile( $this->tempFilePath );
+        $this->deleteTempFile( $this->tempFilePath[2] );
         echo $this->passMassage[2];
+    }
+
+    /**
+     * Test 3
+     *
+     * Test whether PhpWget can follow the redirect to download file
+     */
+    public function testFollowRedirect() {
+        exec( "php $this->testFilePath -uhttps://github.com/RazeSoldier/PhpWget/archive/v0.1.tar.gz" );
+        $filename = 'v0.1.tar.gz';
+        if ( !file_exists( $filename ) ) {
+            echo $this->errorMassages['error'][2];
+            die ( 1 );
+        }
+        $this->deleteTempFile( $this->tempFilePath[3] );
+        echo $this->passMassage[3];
     }
 
     public function testEnd() {
@@ -143,4 +165,5 @@ class test {
 $test = new \PhpWget\test();
 $test->testDownloadFile(); //Test whether PhpWget can download files from Internet
 $test->testDownloadMultlLevelDomainURL(); //Test whether PhpWget can correctly download files containing multi-level domain URL
+$test->testFollowRedirect(); //Test whether PhpWget can follow the redirect to download file
 $test->testEnd();
