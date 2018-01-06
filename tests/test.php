@@ -205,6 +205,7 @@ class test {
         $dirname = 'PhpWget-0.1';
         if ( !file_exists( $dirname ) ) {
             echo $this->errorMassages['error'][4];
+            die ( 1 );
         }
         $this->deleteTempFile( $this->tempFilePath[4][0] );
         $this->deleteTempFile( $this->tempFilePath[4][1] );
