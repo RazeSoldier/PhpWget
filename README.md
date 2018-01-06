@@ -4,6 +4,7 @@
 
 == Main Feature ==
 * Download files from Internet
+* Extract tar/zip archive after download
 
 == Usage ==
 
