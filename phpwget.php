@@ -78,7 +78,8 @@ STR;
         4 => '[Warning] PhpWget does not support your operating system.',
         5 => '[Warning] This script must be run in cli mode.',
         6 => '[Error] PhpWget can not download file.',
-        7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.'
+        7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
+        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.'
     ];
 
     /**
@@ -155,11 +156,19 @@ STR;
         if ( !extension_loaded( 'phar' ) ) {
             $this->pharLoaded = false;
         }
+        /**
+         * Compare PHP version, if the current version is lower than 5.5.24,
+         * then output a notice
+         * @Bug https://github.com/RazeSoldier/PhpWget/issues/1
+         */
+        if ( version_compare( PHP_VERSION, '5.5.24', '<' ) ) {
+            $this->shellOutput( $this->errorMassages[8] );
+        }
     }
 
     public function __construct() {
-        $this->checkPHPEnvironment();
         echo "PHP runs in cli mode.\n";
+        $this->checkPHPEnvironment();
     }
 }
 
