@@ -37,7 +37,11 @@ class test {
     private $tempFilePath = [
         1 => 'index.html',
         2 => 'index.html',
-        3 => 'v0.1.tar.gz'
+        3 => 'v0.1.tar.gz',
+        4 => [
+            'PhpWget-0.1',
+            'tar.v0.1'
+        ],
     ];
 
     /**
@@ -51,7 +55,8 @@ class test {
         'error' => [
             1 => "[Error] PhpWget can not download file from Internet.\n",
             2 => "[Error] PhpWget can not correctly download files containing multi-level domain URL.\n",
-            3 => "[Error] PhpWget can not follow the redirect to download.\n"
+            3 => "[Error] PhpWget can not follow the redirect to download.\n",
+            4 => "[Error] PhpWget can not extract the archive after download file.\n"
         ],
         'notice' => [
             1 => "[Notice] PhpWget can not remove temporary file.\n"
@@ -59,9 +64,10 @@ class test {
     ];
 
     private $passMassage = [
-        1 => "[Test 1/3 Pass] Test whether PhpWget can download files from Internet\n",
-        2 => "[Test 2/3 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
-        3 => "[Test 3/3 Pass] Test whether PhpWget can follow the redirect to download file.",
+        1 => "[Test 1/4 Pass] Test whether PhpWget can download files from Internet\n",
+        2 => "[Test 2/4 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
+        3 => "[Test 3/4 Pass] Test whether PhpWget can follow the redirect to download file\n",
+        4 => "[Test 4/4 Pass] Test whether PhpWget can extract the archive after download\n",
         'final' => "\nPhpWget feature is OK.\n"
     ];
 
@@ -160,10 +166,27 @@ class test {
     public function testEnd() {
         echo $this->passMassage['final'];
     }
+
+    /**
+     * Test 4
+     *
+     * Test whether PhpWget can extract the archive after download
+     */
+    public function testExtractArchive() {
+        exec( "php $this->testFilePath -uhttps://codeload.github.com/RazeSoldier/PhpWget/tar.gz/v0.1 --UZ" );
+        $dirname = 'PhpWget-0.1';
+        if ( !file_exists( $dirname ) ) {
+            echo $this->errorMassages['error'][4];
+        }
+        $this->deleteTempFile( $this->tempFilePath[4][0] );
+        $this->deleteTempFile( $this->tempFilePath[4][1] );
+        echo $this->passMassage[4];
+    }
 }
 
 $test = new \PhpWget\test();
 $test->testDownloadFile(); //Test whether PhpWget can download files from Internet
 $test->testDownloadMultlLevelDomainURL(); //Test whether PhpWget can correctly download files containing multi-level domain URL
 $test->testFollowRedirect(); //Test whether PhpWget can follow the redirect to download file
+$test->testExtractArchive(); //Test whether PhpWget can extract the archive after download
 $test->testEnd();
