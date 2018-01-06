@@ -63,7 +63,9 @@ Usage: php <this script name> -u=<file URL> [options]
    php <this script name> -h
 
   -f The file path you want to save, by default it will be saved to the current working directory
-  -h This help\n
+  -h This help
+
+  --UZ Extract the archive after download\n
 STR;
 
     /**
@@ -75,7 +77,9 @@ STR;
         3 => '[Warning] You did not load curl extension, the script does not work.',
         4 => '[Warning] PhpWget does not support your operating system.',
         5 => '[Warning] This script must be run in cli mode.',
-        6 => '[Error] PhpWget can not download file.'
+        6 => '[Error] PhpWget can not download file.',
+        7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
+        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.'
     ];
 
     /**
@@ -129,7 +133,7 @@ STR;
      */
     protected function shellOutput($input, $color = 'red') {
         if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
-            $output = $this->setShellColor( $input,$color ) . "\n";
+            $output = $this->setShellColor( $input, $color ) . "\n";
         } else {
             $output = $input . "\n";
         }
@@ -152,11 +156,19 @@ STR;
         if ( !extension_loaded( 'phar' ) ) {
             $this->pharLoaded = false;
         }
+        /**
+         * Compare PHP version, if the current version is lower than 5.5.24,
+         * then output a notice
+         * @Bug https://github.com/RazeSoldier/PhpWget/issues/1
+         */
+        if ( version_compare( PHP_VERSION, '5.5.24', '<' ) ) {
+            $this->shellOutput( $this->errorMassages[8] );
+        }
     }
 
     public function __construct() {
-        $this->checkPHPEnvironment();
         echo "PHP runs in cli mode.\n";
+        $this->checkPHPEnvironment();
     }
 }
 
@@ -292,7 +304,7 @@ class downloadFile extends PhpWget {
         $this->displayConcludingWords($download);
 
         if ( isset($this->options['UZ'] ) ) {
-            $unZip = new unZip( $this->getFileName() );
+            $unZip = new UnZip( $this->getFileName() );
             $unZip->unZip();
         }
     }
@@ -383,7 +395,7 @@ class downloadFile extends PhpWget {
  * Used to extract the archive
  * @class Used to extract the archive
  */
-class unzip extends PhpWget {
+class UnZip extends PhpWget {
     /**
      * @var string $archiveName
      */
@@ -398,10 +410,25 @@ class unzip extends PhpWget {
      */
     public function unZip() {
         if ( $this->pharLoaded === false ) {
-            echo '[Warning] You did not load phar extension, PhpWget can\'t extract archive.';
+            $this->shellOutput( $this->errorMassages[7] );
         } else {
             $pharData = new \PharData( $this->archiveName );
-            $pharData->extractTo( '.' );
+            $extract = $pharData->extractTo( '.' );
+            $this->displayConcludingWords( $extract );
+        }
+    }
+
+    /**
+     * Display concluding words, if the archive successfully extracted to the file system
+     */
+    private function displayConcludingWords($check) {
+        if ( $check === true ) {
+            if ( isset( $this->fileDir ) ) {
+                $targetDir = $this->fileDir;
+            } else {
+                $targetDir = getcwd();
+            }
+            $this->shellOutput( "{$this->archiveName} successfully extracted to {$targetDir}", 'green');
         }
     }
 }
