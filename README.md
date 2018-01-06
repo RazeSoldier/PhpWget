@@ -16,4 +16,6 @@ php <this script name> -h
 
 == Compatibility ==
 
-PhpWget is compatible with PHP 5.4 to PHP 7.2. PhpWget is not tested in other PHP5 versions, but it should be compatible.
+PhpWget is compatible with PHP 5.5.24 to PHP 7.2.
+
+In PHP 5.5.24- version, PhpWget can't extract BSD generated tar file, other features is OK. [Bug #1](https://github.com/RazeSoldier/PhpWget/issues/1)
