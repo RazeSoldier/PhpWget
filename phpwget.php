@@ -413,7 +413,22 @@ class UnZip extends PhpWget {
             $this->shellOutput( $this->errorMassages[7] );
         } else {
             $pharData = new \PharData( $this->archiveName );
-            $pharData->extractTo( '.' );
+            $extract = $pharData->extractTo( '.' );
+            $this->displayConcludingWords( $extract );
+        }
+    }
+
+    /**
+     * Display concluding words, if the archive successfully extracted to the file system
+     */
+    private function displayConcludingWords($check) {
+        if ( $check === true ) {
+            if ( isset( $this->fileDir ) ) {
+                $targetDir = $this->fileDir;
+            } else {
+                $targetDir = getcwd();
+            }
+            $this->shellOutput( "{$this->archiveName} successfully extracted to {$targetDir}", 'green');
         }
     }
 }
