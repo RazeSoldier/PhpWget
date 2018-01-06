@@ -304,7 +304,7 @@ class downloadFile extends PhpWget {
         $this->displayConcludingWords($download);
 
         if ( isset($this->options['UZ'] ) ) {
-            $unZip = new unZip( $this->getFileName() );
+            $unZip = new UnZip( $this->getFileName() );
             $unZip->unZip();
         }
     }
@@ -395,7 +395,7 @@ class downloadFile extends PhpWget {
  * Used to extract the archive
  * @class Used to extract the archive
  */
-class unzip extends PhpWget {
+class UnZip extends PhpWget {
     /**
      * @var string $archiveName
      */
