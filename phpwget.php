@@ -295,12 +295,13 @@ class DownloadFile extends PhpWget {
 
     public function download() {
         $this->setCurlOpt();
-        if ( curl_exec( $this->curlResource ) === false ) {
+        $curlOutput = curl_exec( $this->curlResource );
+        if ( $curlOutput === false ) {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
         $filedir = $this->getFileDir();
-        $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
+        $download = file_put_contents( $filedir, $curlOutput );
         $this->displayConcludingWords($download);
 
         if ( isset($this->options['UZ'] ) ) {
