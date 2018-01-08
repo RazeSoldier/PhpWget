@@ -184,7 +184,7 @@ class test {
         exec( "php $this->testFilePath -uhttps://github.com/RazeSoldier/PhpWget/archive/v0.1.tar.gz" );
         $filename = 'v0.1.tar.gz';
         if ( !file_exists( $filename ) ) {
-            echo $this->errorMassages['error'][2];
+            echo $this->errorMassages['error'][3];
             die ( 1 );
         }
         $this->deleteTempFile( $this->tempFilePath[3] );
