@@ -191,10 +191,6 @@ class Test {
         echo $this->passMassage[3];
     }
 
-    public function testEnd() {
-        echo $this->passMassage['final'];
-    }
-
     /**
      * Test 4
      *
@@ -210,6 +206,10 @@ class Test {
         $this->deleteTempFile( $this->tempFilePath[4][0] );
         $this->deleteTempFile( $this->tempFilePath[4][1] );
         echo $this->passMassage[4];
+    }
+
+    public function testEnd() {
+        echo $this->passMassage['final'];
     }
 }
 
