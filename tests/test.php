@@ -21,7 +21,7 @@
  */
 namespace PhpWget;
 
-class test {
+class Test {
     /**
      * PhpWget script file path
      *
@@ -213,7 +213,7 @@ class test {
     }
 }
 
-$test = new \PhpWget\test();
+$test = new \PhpWget\Test();
 $test->testDownloadFile(); //Test whether PhpWget can download files from Internet
 $test->testDownloadMultlLevelDomainURL(); //Test whether PhpWget can correctly download files containing multi-level domain URL
 $test->testFollowRedirect(); //Test whether PhpWget can follow the redirect to download file
