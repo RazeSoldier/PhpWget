@@ -176,7 +176,7 @@ STR;
  * Used to download file
  * @class Download action class
  */
-class downloadFile extends PhpWget {
+class DownloadFile extends PhpWget {
     /**
      * @var resource $curlResource
      */
@@ -434,5 +434,5 @@ class UnZip extends PhpWget {
 }
 
 $PhpWget = new PhpWget();
-$downloadFile = new \PhpWget\downloadFile();
+$downloadFile = new \PhpWget\DownloadFile();
 $downloadFile->download();
