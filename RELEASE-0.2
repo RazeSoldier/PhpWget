@@ -1,0 +1,26 @@
+# RELEASE-0.2
+Project repository: https://github.com/RazeSoldier/PhpWget
+
+This is the second release of PhpWget Project.
+
+In this release, PhpWget add a new feature -- extract tar/zip archive.
+Now, you can extract tar/zip archive after download, only add the long option '--UZ' at the end of the command.
+Archive will be extracted in a new folder, the original archive will not be deleted.
+Note that due to an interpreter bug, in PHP 5.5.24-, PhpWget can't extract BSD generated tar file, only support ustar format.
+See also https://github.com/RazeSoldier/PhpWget/issues/1
+
+In addition to a new feature, we also fixed several bugs.
+See the change log at the end of this document for more information.
+
+We plan to add a feature in the next version that verifies the integrity of the download file.
+
+== Change Log ==
+=== New Feature ==
+* Extract tar/zip archive after download
+
+=== Fixed Bug ===
+* Fixed unable to download HTTPS resources issue
+* Fixed unable to follow HTTP redirect issue
+
+=== Compatibility ===
+* The minimum PHP support version is changed to 5.5.24

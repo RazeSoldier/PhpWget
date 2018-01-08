@@ -22,60 +22,71 @@
 
 namespace PhpWget;
 
-class downloadFile {
+/**
+ * @class Main class
+ */
+class PhpWget {
     /**
      * Each character in this string will be used as option characters
-     *
      * @var string $optionIndex
      */
-    private $optionIndex = 'hu:f::';
+    protected $optionIndex = 'hu:f::';
+
+    /**
+     * Store long option elements
+     * @var array $longopts
+     */
+    protected $longopts = [
+        'UZ' // Command PhpWget extract the downloaded archive
+    ];
 
     /**
      * @var array $options
      */
-    private $options;
+    protected $options;
 
     /**
      * @var string|null $fileURL
      */
-    private $fileURL;
+    protected $fileURL;
 
     /**
      * @var string|null $fileDir
      */
-    private $fileDir;
+    protected $fileDir;
 
     /**
      * @var string $helpMassage
      */
-    private $helpMassage = <<<STR
+    protected $helpMassage = <<<STR
 Usage: php <this script name> -u=<file URL> [options]
    php <this script name> -h
 
   -f The file path you want to save, by default it will be saved to the current working directory
-  -h This help\n
+  -h This help
+
+  --UZ Extract the archive after download\n
 STR;
 
     /**
      * @var array $errorMassage
      */
-    private $errorMassages = [
+    protected $errorMassages = [
         1 => '[Notice] You have not typed \'u\' option, the script exit.',
         2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
         3 => '[Warning] You did not load curl extension, the script does not work.',
         4 => '[Warning] PhpWget does not support your operating system.',
-        5 => '[Warning] This script must be run in cli mode.'
+        5 => '[Warning] This script must be run in cli mode.',
+        6 => '[Error] PhpWget can not download file.',
+        7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
+        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.'
     ];
 
     /**
-     * @var resource $curlResource
+     * Stores regular expression pattenrs
+     * @var array $rePatterns
      */
-    private $curlResource;
-
-    /**
-     * @var array $rePatterns Stores regular expression pattenrs
-     */
-    private $rePatterns = [
+    protected $rePatterns = [
         'win' => [
             1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/'
         ],
@@ -85,37 +96,23 @@ STR;
         ],
         'web' => [
             1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
-            2 => '/\bhttps?:\/{2}\b/', // User to match 'http' protocol name
+            2 => '/\bhttps?:\/{2}\b/', // Used to match 'http' protocol name
             3 => '/([a-zA-Z0-9_&%$#()-]*\/)*/'
         ]
     ];
 
     /**
+     * @var bool|null $pharLoaded
+     */
+    protected $pharLoaded;
+
+    /**
      * @var array $shellColor Store the color code
      */
-    private $shellColor = [
+    protected $shellColor = [
         'red' => '31m',
         'green' => '32m'
     ];
-
-    public function __construct() {
-        $this->checkPHPEnvironment();
-
-        echo "PHP runs in cli mode.\n";
-
-        $this->options = getopt( $this->optionIndex );
-
-        $this->displayHelpMassage();
-        $this->checkOptions();
-        $this->fileURL = $this->options['u'];
-        if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
-            $this->fileDir = $this->options['f'];
-            $this->checkFileDir();
-        }
-        $this->checkURL();
-
-        $this->curlResource = curl_init( $this->fileURL );
-    }
 
     /**
      * Render the font color of the output
@@ -134,9 +131,9 @@ STR;
     /**
      * Output
      */
-    private function shellOutput($input, $color = 'red') {
+    protected function shellOutput($input, $color = 'red') {
         if ( PHP_OS === 'Linux' || PHP_OS === 'Unix' ) {
-            $output = $this->setShellColor( $input,$color ) . "\n";
+            $output = $this->setShellColor( $input, $color ) . "\n";
         } else {
             $output = $input . "\n";
         }
@@ -156,6 +153,48 @@ STR;
             $this->shellOutput( $this->errorMassages[5] );
             die ( 1 );
         }
+        if ( !extension_loaded( 'phar' ) ) {
+            $this->pharLoaded = false;
+        }
+        /**
+         * Compare PHP version, if the current version is lower than 5.5.24,
+         * then output a notice
+         * @Bug https://github.com/RazeSoldier/PhpWget/issues/1
+         */
+        if ( version_compare( PHP_VERSION, '5.5.24', '<' ) ) {
+            $this->shellOutput( $this->errorMassages[8] );
+        }
+    }
+
+    public function __construct() {
+        echo "PHP runs in cli mode.\n";
+        $this->checkPHPEnvironment();
+    }
+}
+
+/**
+ * Used to download file
+ * @class Download action class
+ */
+class DownloadFile extends PhpWget {
+    /**
+     * @var resource $curlResource
+     */
+    private $curlResource;
+
+    public function __construct() {
+        $this->options = getopt( $this->optionIndex, $this->longopts );
+
+        $this->displayHelpMassage();
+        $this->checkOptions();
+        $this->fileURL = $this->options['u'];
+        if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
+            $this->fileDir = $this->options['f'];
+            $this->checkFileDir();
+        }
+        $this->checkURL();
+
+        $this->curlResource = curl_init( $this->fileURL );
     }
 
     /**
@@ -183,10 +222,11 @@ STR;
      * Check the URL user entered
      */
     private function checkURL() {
-        // Auto-fill 'http' protocol name,
-        // if user entered the URL without the protocol name
         $pattern[1] = $this->rePatterns['web'][1];
         $pattern[2] = $this->rePatterns['web'][2];
+
+        // Auto-fill 'http' protocol name,
+        // if user entered the URL without the protocol name
         $matchResult2 = preg_match( $pattern[2], $this->fileURL );
         if ( $matchResult2 === 0 ) {
             $this->fileURL = 'http://' . $this->fileURL;
@@ -242,12 +282,32 @@ STR;
         }
     }
 
+    /**
+     * Set some option for a cURL transfer
+     */
+    private function setCurlOpt() {
+        curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true );
+        // Stop cURL from verifying the peer's certificate
+        curl_setopt( $this->curlResource, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $this->curlResource, CURLOPT_FOLLOWLOCATION, true );
+    }
+
     public function download() {
-        curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true);
+        $this->setCurlOpt();
+        $curlOutput = curl_exec( $this->curlResource );
+        if ( $curlOutput === false ) {
+            $this->shellOutput( $this->errorMassages[6], 'red' );
+            die ( 1 );
+        }
         $filedir = $this->getFileDir();
-        $download = file_put_contents( $filedir, curl_exec( $this->curlResource ) );
+        $download = file_put_contents( $filedir, $curlOutput );
         $this->displayConcludingWords($download);
+
+        if ( isset($this->options['UZ'] ) ) {
+            $unZip = new UnZip( $this->getFileName() );
+            $unZip->unZip();
+        }
     }
 
     /**
@@ -283,7 +343,7 @@ STR;
         }
 
         if ( !$check === false ) {
-            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir\n", 'green');
+            $this->shellOutput( "{$this->getFileName()} successfully download to $targetDir", 'green');
         }
     }
 
@@ -332,5 +392,48 @@ STR;
     }
 }
 
-$downloadFile = new \PhpWget\downloadFile();
+/**
+ * Used to extract the archive
+ * @class Used to extract the archive
+ */
+class UnZip extends PhpWget {
+    /**
+     * @var string $archiveName
+     */
+    private $archiveName;
+
+    public function __construct($archiveName) {
+        $this->archiveName = $archiveName;
+    }
+
+    /**
+     * Extract the archive
+     */
+    public function unZip() {
+        if ( $this->pharLoaded === false ) {
+            $this->shellOutput( $this->errorMassages[7] );
+        } else {
+            $pharData = new \PharData( $this->archiveName );
+            $extract = $pharData->extractTo( '.' );
+            $this->displayConcludingWords( $extract );
+        }
+    }
+
+    /**
+     * Display concluding words, if the archive successfully extracted to the file system
+     */
+    private function displayConcludingWords($check) {
+        if ( $check === true ) {
+            if ( isset( $this->fileDir ) ) {
+                $targetDir = $this->fileDir;
+            } else {
+                $targetDir = getcwd();
+            }
+            $this->shellOutput( "{$this->archiveName} successfully extracted to {$targetDir}", 'green');
+        }
+    }
+}
+
+$PhpWget = new PhpWget();
+$downloadFile = new \PhpWget\DownloadFile();
 $downloadFile->download();
