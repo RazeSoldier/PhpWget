@@ -295,7 +295,7 @@ class DownloadFile extends PhpWget {
 
     public function download() {
         $this->setCurlOpt();
-        if ( !curl_exec( $this->curlResource ) ) {
+        if ( curl_exec( $this->curlResource ) === false ) {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
