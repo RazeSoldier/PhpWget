@@ -28,7 +28,9 @@ try {
     $phar->buildFromDirectory( __DIR__, $includeRegex );
     $phar->delete( 'tests/test.php' ); // Ignore test script
     $phar->delete( pathinfo( __FILE__, PATHINFO_BASENAME ) ); // Ignore this build script
-    $phar->setDefaultStub( $bootstrapFilename );
+    // Set phar file head
+    $pharHead = "#!/usr/bin/env php\n";
+    $phar->setStub( $pharHead . $phar->createDefaultStub( $bootstrapFilename ) );
     // Set phar meta-data
     $metadata = [
         'BootstrapFile' => $bootstrapFilename,
