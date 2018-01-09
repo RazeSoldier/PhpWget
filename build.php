@@ -20,9 +20,34 @@
  * @file
  */
 
-$phar = new Phar( 'PhpWget.phar' );
-$includeRegex = '/\.php$/'; // Inculde all .php file
-$phar->buildFromDirectory( __DIR__, $includeRegex );
-$phar->delete( 'tests/test.php' ); // Ignore test script
-$phar->delete( pathinfo( __FILE__, PATHINFO_BASENAME ) ); // Ignore this build script
-$phar->setDefaultStub( 'phpwget.php' );
+$pharName = 'PhpWget.phar';
+$bootstrapFilename = 'phpwget.php';
+try {
+    $phar = new Phar( $pharName );
+    $includeRegex = '/\.php$/'; // Inculde all .php file
+    $phar->buildFromDirectory( __DIR__, $includeRegex );
+    $phar->delete( 'tests/test.php' ); // Ignore test script
+    $phar->delete( pathinfo( __FILE__, PATHINFO_BASENAME ) ); // Ignore this build script
+    $phar->setDefaultStub( $bootstrapFilename );
+    // Set phar meta-data
+    $metadata = [
+        'BootstrapFile' => $bootstrapFilename,
+        'Object Name' => 'PhpWget',
+        'Project repository' => 'https://github.com/RazeSoldier/PhpWget'
+    ];
+    $phar->setMetadata( $metadata );
+} catch ( PharException $e ) {
+    echo 'Write operations failed on brandnewphar.phar: ', $e;
+} catch ( UnexpectedValueException $e ) {
+    if ( ini_get( 'phar.readonly' ) == 1 ) {
+        $errorMsg = "phar.readonly is set to 1, build script does not work. (Please set phar.readonly to 0 in php.ini)\n";
+        trigger_error( $errorMsg , E_USER_ERROR );
+    }
+    echo $e;
+}
+
+if ( !file_exists( $pharName ) ) {
+    trigger_error( "Build failed, unknown error.\n" , E_USER_ERROR);
+} else {
+    echo "Build successfully, saved as $pharName.\n";
+}
