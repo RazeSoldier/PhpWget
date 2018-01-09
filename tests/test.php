@@ -27,7 +27,7 @@ class Test {
      *
      * @var string $testFilePath
      */
-    private $testFilePath = '../phpwget.php';
+    private $testFilePath = 'phpwget.php';
 
     /**
      * Test script create temporary file path
@@ -73,6 +73,7 @@ class Test {
     ];
 
     public function __construct() {
+        chdir( '..' );
         $this->checkPHPEnvironment();
         $this->checkFileExist();
     }
