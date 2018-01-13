@@ -156,6 +156,23 @@ class DownloadFile extends PhpWget {
                 $this->filePath = 'index.html';
             }
         }
+        $this->replaceWinSysSpecialCharacters();
+    }
+
+    /**
+     * If PhpWget run under windows system,
+     * remove special characters that are sensitive to windows system
+     * @Bug 2 https://github.com/RazeSoldier/PhpWget/issues/2
+     */
+    private function replaceWinSysSpecialCharacters() {
+        if ( PHP_OS === 'WINNT' ||
+                PHP_OS === 'WIN32' || PHP_OS === 'Windows'
+            ) {
+            $specialcharacters = '/[:?<>\|]/';
+            $replacement = '.';
+            $output = preg_replace( $specialcharacters, $replacement, $this->filePath );
+            $this->filePath = $output;
+        }
     }
 
     /**
