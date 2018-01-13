@@ -154,7 +154,7 @@ class DownloadFile extends PhpWget {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
-        $filedir = $this->getFileDir();
+        $filedir = $this->setFilePath();
         $download = file_put_contents( $filedir, $curlOutput );
         $this->displayConcludingWords($download);
 
@@ -167,7 +167,7 @@ class DownloadFile extends PhpWget {
     /**
      * According to the URL to determine the file directory.
      */
-    private function getFileDir() {
+    private function setFilePath() {
         if ( isset( $this->filePath ) ) {
             if ( is_dir( $this->filePath ) ) {
                 $filedir = $this->filePath.'/index.html';
