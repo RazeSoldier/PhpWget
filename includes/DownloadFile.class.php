@@ -34,7 +34,7 @@ class DownloadFile extends PhpWget {
     /**
      * @var string Where will the file be downloaded?
      */
-    private $fileDir;
+    private $filePath;
 
     public function __construct() {
         $this->options = getopt( $this->optionIndex, $this->longopts );
@@ -43,7 +43,7 @@ class DownloadFile extends PhpWget {
         $this->checkOptions();
         $this->fileURL = $this->options['u'];
         if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
-            $this->fileDir = $this->options['f'];
+            $this->filePath = $this->options['f'];
             $this->checkFileDir();
         }
         $this->checkURL();
@@ -97,7 +97,7 @@ class DownloadFile extends PhpWget {
      * Check PHP can write to the target directory
      */
     private function checkFileDir() {
-        if ( is_dir( $this->fileDir ) ) {
+        if ( is_dir( $this->filePath ) ) {
             switch( PHP_OS ) {
                 case 'WINNT':
                 case 'WIN32':
@@ -128,7 +128,7 @@ class DownloadFile extends PhpWget {
                     die ( 1 );
             } //end switch
         } //end if
-        preg_match( $pattern, $this->fileDir, $matches);
+        preg_match( $pattern, $this->filePath, $matches);
 
         if ( !is_writable( $matches[0] ) ) {
             $this->shellOutput( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory" );
@@ -168,11 +168,11 @@ class DownloadFile extends PhpWget {
      * According to the URL to determine the file directory.
      */
     private function getFileDir() {
-        if ( isset( $this->fileDir ) ) {
-            if ( is_dir( $this->fileDir ) ) {
-                $filedir = $this->fileDir.'/index.html';
+        if ( isset( $this->filePath ) ) {
+            if ( is_dir( $this->filePath ) ) {
+                $filedir = $this->filePath.'/index.html';
             } else {
-                $filedir = $this->fileDir;
+                $filedir = $this->filePath;
             }
         } else {
             $pattern[1] = $this->rePatterns['web'][1];
@@ -190,8 +190,8 @@ class DownloadFile extends PhpWget {
      * Display concluding words, if the file successfully written to the file system
      */
     private function displayConcludingWords($check) {
-        if ( isset( $this->fileDir ) ) {
-            $targetDir = $this->fileDir;
+        if ( isset( $this->filePath ) ) {
+            $targetDir = $this->filePath;
         } else {
             $targetDir = getcwd();
         }
@@ -205,8 +205,8 @@ class DownloadFile extends PhpWget {
      * According to the URL to determine the file name.
      */
     private function getFileName() {
-        if ( isset( $this->fileDir ) ) {
-            if ( is_dir( $this->fileDir ) ) {
+        if ( isset( $this->filePath ) ) {
+            if ( is_dir( $this->filePath ) ) {
                 $filename = 'index.html';
             } else {
                 switch( PHP_OS ) {
@@ -223,7 +223,7 @@ class DownloadFile extends PhpWget {
                         $this->shellOutput( $this->errorMassages[4] );
                         die ( 1 );
                 }
-                $filename = preg_replace( $pattern, null, $this->fileDir );
+                $filename = preg_replace( $pattern, null, $this->filePath );
             }
         } else {
             // Default action, if 'f' option is not specified
