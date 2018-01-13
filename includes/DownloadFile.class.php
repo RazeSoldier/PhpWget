@@ -31,6 +31,11 @@ class DownloadFile extends PhpWget {
      */
     private $curlResource;
 
+    /**
+     * @var string Where will the file be downloaded?
+     */
+    private $fileDir;
+
     public function __construct() {
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
