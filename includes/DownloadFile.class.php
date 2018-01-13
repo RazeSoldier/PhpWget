@@ -47,6 +47,7 @@ class DownloadFile extends PhpWget {
             $this->checkFileDir();
         }
         $this->checkURL();
+        $this->setFilePath();
 
         $this->curlResource = curl_init( $this->fileURL );
     }
@@ -137,6 +138,27 @@ class DownloadFile extends PhpWget {
     }
 
     /**
+     * According to the URL to determine the file directory.
+     */
+    private function setFilePath() {
+        if ( isset( $this->filePath ) ) {
+            if ( is_dir( $this->filePath ) ) {
+                $this->filePath = $this->filePath . '/index.html';
+            } else {
+                $this->filePath = $this->filePath;
+            }
+        } else {
+            $pattern[1] = $this->rePatterns['web'][1];
+            $pattern[2] = $this->rePatterns['web'][3];
+            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
+            $this->filePath = preg_replace( $pattern[2], null, $urlFilename );
+            if ( $this->filePath === '' ) {
+                $this->filePath = 'index.html';
+            }
+        }
+    }
+
+    /**
      * Set some option for a cURL transfer
      */
     private function setCurlOpt() {
@@ -154,36 +176,13 @@ class DownloadFile extends PhpWget {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
-        $filedir = $this->setFilePath();
-        $download = file_put_contents( $filedir, $curlOutput );
+        $download = file_put_contents( $this->filePath, $curlOutput );
         $this->displayConcludingWords($download);
 
         if ( isset($this->options['UZ'] ) ) {
             $unZip = new UnZip( $this->getFileName() );
             $unZip->unZip();
         }
-    }
-
-    /**
-     * According to the URL to determine the file directory.
-     */
-    private function setFilePath() {
-        if ( isset( $this->filePath ) ) {
-            if ( is_dir( $this->filePath ) ) {
-                $filedir = $this->filePath.'/index.html';
-            } else {
-                $filedir = $this->filePath;
-            }
-        } else {
-            $pattern[1] = $this->rePatterns['web'][1];
-            $pattern[2] = $this->rePatterns['web'][3];
-            $urlFilename = preg_replace( $pattern[1], null, $this->fileURL );
-            $filedir = preg_replace( $pattern[2], null, $urlFilename );
-            if ( $filedir === '' ) {
-                $filedir = 'index.html';
-            }
-        }
-        return $filedir;
     }
 
     /**
