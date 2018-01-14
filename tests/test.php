@@ -269,4 +269,5 @@ $test->testDownloadMultlLevelDomainURL(); //Test whether PhpWget can correctly d
 $test->testFollowRedirect(); //Test whether PhpWget can follow the redirect to download file
 $test->testExtractArchive(); //Test whether PhpWget can extract the archive after download
 $test->testBuildScript(); //Test whether build scripts can normally build phar archive
+$test->testBug2(); //Test whether PhpWget can download files with special characters under windows system
 $test->testEnd();
