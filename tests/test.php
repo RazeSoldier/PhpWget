@@ -42,7 +42,8 @@ class Test {
             'PhpWget-0.1',
             'tar.v0.1'
         ],
-        5 => 'PhpWget.phar'
+        5 => 'PhpWget.phar',
+        6 => 'Portal.Contents'
     ];
 
     /**
@@ -58,7 +59,8 @@ class Test {
             2 => "[Error] PhpWget can not correctly download files containing multi-level domain URL.\n",
             3 => "[Error] PhpWget can not follow the redirect to download.\n",
             4 => "[Error] PhpWget can not extract the archive after download file.\n",
-            5 => "[Error] Build script can not build phar archive\n"
+            5 => "[Error] Build script can not build phar archive\n",
+            6 => "[Error] PhpWget can download files with special characters under windows system\n"
         ],
         'notice' => [
             1 => "[Notice] PhpWget can not remove temporary file.\n",
@@ -67,11 +69,15 @@ class Test {
     ];
 
     private $passMassage = [
-        1 => "[Test 1/5 Pass] Test whether PhpWget can download files from Internet\n",
-        2 => "[Test 2/5 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
-        3 => "[Test 3/5 Pass] Test whether PhpWget can follow the redirect to download file\n",
-        4 => "[Test 4/5 Pass] Test whether PhpWget can extract the archive after download\n",
-        5 => "[Test 5/5 Pass] Test whether build scripts can normally build phar archive\n",
+        1 => "[Test 1/6 Pass] Test whether PhpWget can download files from Internet\n",
+        2 => "[Test 2/6 Pass] Test whether PhpWget can correctly download files containing multi-level domain URL\n",
+        3 => "[Test 3/6 Pass] Test whether PhpWget can follow the redirect to download file\n",
+        4 => "[Test 4/6 Pass] Test whether PhpWget can extract the archive after download\n",
+        5 => "[Test 5/6 Pass] Test whether build scripts can normally build phar archive\n",
+        6 => [
+            'win' => "[Test 6/6 Pass] Test whether PhpWget can download files with special characters under windows system\n",
+            'no-win' => "[Test 6/6 Ignore] The current operating system is not windows\n"
+        ],
         'final' => "\nPhpWget feature is OK.\n"
     ];
 
@@ -227,6 +233,29 @@ class Test {
         }
         $this->deleteTempFile( $this->tempFilePath[5] );
         echo $this->passMassage[5];
+    }
+
+    /**
+     * Test 6
+     *
+     * Test whether PhpWget can download files with special characters under windows system
+     * Test Bug 2 https://github.com/RazeSoldier/PhpWget/issues/2
+     */
+    public function testBug2() {
+        if ( PHP_OS === 'WINNT' ||
+                PHP_OS === 'WIN32' || PHP_OS === 'Windows'
+            ) {
+            exec( "php $this->testFilePath -uhttps://en.wikipedia.org/wiki/Portal:Contents" );
+            $filename = 'Portal.Contents';
+            if ( !file_exists( $filename ) ) {
+                echo $this->errorMassages['error'][6];
+                die ( 1 );
+            }
+            $this->deleteTempFile( $this->tempFilePath['6'] );
+            echo $this->passMassage[6]['win'];
+        } else {
+            echo $this->passMassage[6]['no-win'];
+        }
     }
 
     public function testEnd() {

@@ -51,11 +51,6 @@ class PhpWget {
     protected $fileURL;
 
     /**
-     * @var string|null $fileDir
-     */
-    protected $fileDir;
-
-    /**
      * @var string $helpMassage
      */
     protected $helpMassage = <<<STR
