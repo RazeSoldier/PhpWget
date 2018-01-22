@@ -36,7 +36,17 @@ class DownloadFile extends PhpWget {
      */
     private $filePath;
 
-    public function __construct() {
+	/**
+	 * @var resource Local file
+	 */
+	private $fileResource;
+
+	/**
+	 * @var bool Download result
+	 */
+	private $result;
+
+	public function __construct() {
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
@@ -179,7 +189,8 @@ class DownloadFile extends PhpWget {
      * Set some option for a cURL transfer
      */
     private function setCurlOpt() {
-        curl_setopt( $this->curlResource, CURLOPT_RETURNTRANSFER, true );
+		# Support big file download
+		curl_setopt( $this->curlResource, CURLOPT_FILE, $this->fileResource );
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true );
         // Stop cURL from verifying the peer's certificate
         curl_setopt( $this->curlResource, CURLOPT_SSL_VERIFYPEER, false );
@@ -187,14 +198,15 @@ class DownloadFile extends PhpWget {
     }
 
     public function download() {
+		$this->fileResource = fopen( $this->filePath, 'wb' );
         $this->setCurlOpt();
-        $curlOutput = curl_exec( $this->curlResource );
-        if ( $curlOutput === false ) {
+        $this->result = curl_exec( $this->curlResource );
+        if ( $this->result === false ) {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
-        $download = file_put_contents( $this->filePath, $curlOutput );
-        $this->displayConcludingWords($download);
+
+        $this->displayConcludingWords( $this->result );
 
         if ( isset($this->options['UZ'] ) ) {
             $unZip = new UnZip( $this->getFileName() );
@@ -259,5 +271,11 @@ class DownloadFile extends PhpWget {
         if ( is_resource( $this->curlResource ) ) {
             curl_close( $this->curlResource );
         }
+		if ( is_resource( $this->fileResource ) ) {
+            fclose( $this->fileResource );
+        }
+		if ( !$this->result ) {
+			unlink( $this->filePath );
+		}
     }
 }
