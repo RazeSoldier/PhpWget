@@ -41,6 +41,11 @@ class DownloadFile extends PhpWget {
 	 */
 	private $fileResource;
 
+	/**
+	 * @var bool Download result
+	 */
+	private $result;
+
 	public function __construct() {
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
@@ -195,13 +200,13 @@ class DownloadFile extends PhpWget {
     public function download() {
 		$this->fileResource = fopen( $this->filePath, 'wb' );
         $this->setCurlOpt();
-        $curlOutput = curl_exec( $this->curlResource );
-        if ( $curlOutput === false ) {
+        $this->result = curl_exec( $this->curlResource );
+        if ( $this->result === false ) {
             $this->shellOutput( $this->errorMassages[6], 'red' );
             die ( 1 );
         }
 
-        $this->displayConcludingWords($curlOutput);
+        $this->displayConcludingWords( $this->result );
 
         if ( isset($this->options['UZ'] ) ) {
             $unZip = new UnZip( $this->getFileName() );
@@ -269,5 +274,8 @@ class DownloadFile extends PhpWget {
 		if ( is_resource( $this->fileResource ) ) {
             fclose( $this->fileResource );
         }
+		if ( !$this->result ) {
+			unlink( $this->filePath );
+		}
     }
 }
