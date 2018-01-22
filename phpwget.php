@@ -21,7 +21,6 @@
  */
 
 use PhpWget\PhpWget;
-use PhpWget\DownloadFile;
 
 // Define the absolute path to the root directory of this project
 define( 'APP_PATH', __DIR__ );
@@ -29,5 +28,4 @@ require_once APP_PATH . '/includes/Core.php';
 
 PhpWget::classLoader();
 $PhpWget = new PhpWget();
-$downloadFile = new DownloadFile();
-$downloadFile->download();
+$PhpWget->run();

@@ -173,4 +173,9 @@ STR;
         echo "PHP runs in cli mode.\n";
         $this->checkPHPEnvironment();
     }
+
+	final public function run() {
+		$downloadFile = new DownloadFile();
+		$downloadFile->download();
+	}
 }
