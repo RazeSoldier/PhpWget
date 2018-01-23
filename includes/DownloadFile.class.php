@@ -275,7 +275,9 @@ class DownloadFile extends PhpWget {
             fclose( $this->fileResource );
         }
 		if ( !$this->result ) {
-			unlink( $this->filePath );
-		}
+            if ( file_exists( $this->filePath ) ) {
+                unlink( $this->filePath );
+            }
+        }
     }
 }
