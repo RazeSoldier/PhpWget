@@ -37,7 +37,10 @@ class PhpWget {
      * @var array $longopts
      */
     protected $longopts = [
-        'UZ' // Command PhpWget extract the downloaded archive
+        'UZ', // Command PhpWget extract the downloaded archive
+        'md5::',
+        'sha1::',
+        'sha256::'
     ];
 
     /**
@@ -74,7 +77,8 @@ STR;
         5 => '[Warning] This script must be run in cli mode.',
         6 => '[Error] PhpWget can not download file.',
         7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
-        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.'
+        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.',
+        9 => '[Warning] You provided a too short hash value, can not verify file integrity. Please provide at least 5 characters.'
     ];
 
     /**
@@ -115,6 +119,7 @@ STR;
     static public function classLoader() {
         require_once APP_PATH . '/includes/DownloadFile.class.php';
         require_once APP_PATH . '/includes/UnZip.class.php';
+        require_once APP_PATH . '/includes/VerifyFile.class.php';
     }
 
     /**
@@ -178,4 +183,23 @@ STR;
 		$downloadFile = new DownloadFile();
 		$downloadFile->download();
 	}
+
+    /**
+     * Instantiate VerifyFile class
+     * @param string $filePath
+     */
+    protected function verifyFile($filePath) {
+        if ( isset( $this->options['md5'] ) ) {
+            $md5 = new VerifyFile( $filePath, VerifyFile::MD5 );
+            $md5->verify( $this->options['md5'] );
+        }
+        if ( isset( $this->options['sha1'] ) ) {
+            $sha1 = new VerifyFile( $filePath, VerifyFile::SHA1 );
+            $sha1->verify( $this->options['sha1'] );
+        }
+        if ( isset( $this->options['sha256'] ) ) {
+            $sha1 = new VerifyFile( $filePath, VerifyFile::SHA256 );
+            $sha1->verify( $this->options['sha256'] );
+        }
+    }
 }
