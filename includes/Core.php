@@ -72,7 +72,7 @@ STR;
     /**
      * @var array $errorMassage
      */
-    protected $errorMassages = [
+    protected $errorMessages = [
         1 => '[Notice] You have not typed \'u\' option, the script exit.',
         2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
         3 => '[Warning] You did not load curl extension, the script does not work.',
@@ -158,12 +158,12 @@ STR;
      */
     private function checkPHPEnvironment() {
         if ( !extension_loaded( 'curl' ) ) {
-            $this->shellOutput( $this->errorMassages[3] );
+            $this->shellOutput( $this->errorMessages[3] );
             die ( 1 );
         }
         // Check if this script is running in cli mode
         if ( php_sapi_name() !== 'cli' ) {
-            $this->shellOutput( $this->errorMassages[5] );
+            $this->shellOutput( $this->errorMessages[5] );
             die ( 1 );
         }
         if ( !extension_loaded( 'phar' ) ) {
@@ -175,7 +175,7 @@ STR;
          * @Bug https://github.com/RazeSoldier/PhpWget/issues/1
          */
         if ( version_compare( PHP_VERSION, '5.5.24', '<' ) ) {
-            $this->shellOutput( $this->errorMassages[8] );
+            $this->shellOutput( $this->errorMessages[8] );
         }
     }
 

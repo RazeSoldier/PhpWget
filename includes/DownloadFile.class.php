@@ -77,7 +77,7 @@ class DownloadFile extends PhpWget {
      */
     private function checkOptions() {
         if ( !isset( $this->options['u'] ) ) {
-            $this->shellOutput( $this->errorMassages[1] );
+            $this->shellOutput( $this->errorMessages[1] );
             echo $this->helpMassage;
             die ( 1 );
         }
@@ -99,7 +99,7 @@ class DownloadFile extends PhpWget {
         // Check the format of the URL is correct
         $matchResult1 = preg_match( $pattern[1], $this->fileURL );
         if ( $matchResult1 === 0 ) {
-            $this->shellOutput( $this->errorMassages[2] );
+            $this->shellOutput( $this->errorMessages[2] );
             die ( 1 );
         }
     }
@@ -120,7 +120,7 @@ class DownloadFile extends PhpWget {
                     $pattern = $this->rePatterns['unix'][1];
                     break;
                 default:
-                    $this->shellOutput( $this->errorMassages[4] );
+                    $this->shellOutput( $this->errorMessages[4] );
                     die ( 1 );
             } //end switch
         } else {
@@ -135,7 +135,7 @@ class DownloadFile extends PhpWget {
                     $pattern = $this->rePatterns['unix'][2];
                     break;
                 default:
-                    $this->shellOutput( $this->errorMassages[4] );
+                    $this->shellOutput( $this->errorMessages[4] );
                     die ( 1 );
             } //end switch
         } //end if
@@ -202,7 +202,7 @@ class DownloadFile extends PhpWget {
         $this->setCurlOpt();
         $this->result = curl_exec( $this->curlResource );
         if ( $this->result === false ) {
-            $this->shellOutput( $this->errorMassages[6], 'red' );
+            $this->shellOutput( $this->errorMessages[6], 'red' );
             die ( 1 );
         }
 
@@ -250,7 +250,7 @@ class DownloadFile extends PhpWget {
                         $pattern = $this->rePatterns['unix'][2];
                         break;
                     default:
-                        $this->shellOutput( $this->errorMassages[4] );
+                        $this->shellOutput( $this->errorMessages[4] );
                         die ( 1 );
                 }
                 $filename = preg_replace( $pattern, null, $this->filePath );

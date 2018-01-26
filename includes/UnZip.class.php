@@ -40,14 +40,14 @@ class UnZip extends PhpWget {
      */
     public function unZip() {
         if ( $this->pharLoaded === false ) {
-            $this->shellOutput( $this->errorMassages[7] );
+            $this->shellOutput( $this->errorMessages[7] );
         } else {
             try {
                 $pharData = new \PharData( $this->archiveName );
                 $extract = $pharData->extractTo( '.' );
                 $this->displayConcludingWords( $extract );
             } catch ( \UnexpectedValueException $e ) {
-                $this->shellOutput( $this->errorMassages[10] );
+                $this->shellOutput( $this->errorMessages[10] );
             }
         }
     }

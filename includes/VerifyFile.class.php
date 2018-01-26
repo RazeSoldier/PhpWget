@@ -83,7 +83,7 @@ class VerifyFile extends PhpWget {
     private function handleProvideValue($provideValue) {
         $length = strlen( $provideValue );
         if ( $length < 5 ) {
-            $this->shellOutput( $this->errorMassages[9] );
+            $this->shellOutput( $this->errorMessages[9] );
             die ( 1 );
         }
     }
