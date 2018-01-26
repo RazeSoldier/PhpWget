@@ -183,10 +183,10 @@ STR;
         $this->checkPHPEnvironment();
     }
 
-	final public function run() {
-		$downloadFile = new DownloadFile();
-		$downloadFile->download();
-	}
+    final public function run() {
+        $downloadFile = new DownloadFile();
+        $downloadFile->download();
+    }
 
     /**
      * Instantiate VerifyFile class

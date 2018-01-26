@@ -36,17 +36,17 @@ class DownloadFile extends PhpWget {
      */
     private $filePath;
 
-	/**
-	 * @var resource Local file
-	 */
-	private $fileResource;
+    /**
+     * @var resource Local file
+     */
+    private $fileResource;
 
-	/**
-	 * @var bool Download result
-	 */
-	private $result;
+    /**
+     * @var bool Download result
+     */
+    private $result;
 
-	public function __construct() {
+    public function __construct() {
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
@@ -189,8 +189,8 @@ class DownloadFile extends PhpWget {
      * Set some option for a cURL transfer
      */
     private function setCurlOpt() {
-		# Support big file download
-		curl_setopt( $this->curlResource, CURLOPT_FILE, $this->fileResource );
+        # Support big file download
+        curl_setopt( $this->curlResource, CURLOPT_FILE, $this->fileResource );
         curl_setopt( $this->curlResource, CURLOPT_AUTOREFERER, true );
         // Stop cURL from verifying the peer's certificate
         curl_setopt( $this->curlResource, CURLOPT_SSL_VERIFYPEER, false );
@@ -198,7 +198,7 @@ class DownloadFile extends PhpWget {
     }
 
     public function download() {
-		$this->fileResource = fopen( $this->filePath, 'wb' );
+        $this->fileResource = fopen( $this->filePath, 'wb' );
         $this->setCurlOpt();
         $this->result = curl_exec( $this->curlResource );
         if ( $this->result === false ) {
@@ -273,10 +273,10 @@ class DownloadFile extends PhpWget {
         if ( is_resource( $this->curlResource ) ) {
             curl_close( $this->curlResource );
         }
-		if ( is_resource( $this->fileResource ) ) {
+        if ( is_resource( $this->fileResource ) ) {
             fclose( $this->fileResource );
         }
-		if ( !$this->result ) {
+        if ( !$this->result ) {
             if ( file_exists( $this->filePath ) ) {
                 unlink( $this->filePath );
             }
