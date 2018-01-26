@@ -42,9 +42,13 @@ class UnZip extends PhpWget {
         if ( $this->pharLoaded === false ) {
             $this->shellOutput( $this->errorMassages[7] );
         } else {
-            $pharData = new \PharData( $this->archiveName );
-            $extract = $pharData->extractTo( '.' );
-            $this->displayConcludingWords( $extract );
+            try {
+                $pharData = new \PharData( $this->archiveName );
+                $extract = $pharData->extractTo( '.' );
+                $this->displayConcludingWords( $extract );
+            } catch ( \UnexpectedValueException $e ) {
+                $this->shellOutput( $this->errorMassages[10] );
+            }
         }
     }
 

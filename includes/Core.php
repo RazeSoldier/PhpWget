@@ -81,7 +81,8 @@ STR;
         6 => '[Error] PhpWget can not download file.',
         7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
         8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.',
-        9 => '[Warning] You provided a too short hash value, can not verify file integrity. Please provide at least 5 characters.'
+        9 => '[Warning] You provided a too short hash value, can not verify file integrity. Please provide at least 5 characters.',
+        10 => '[Warning] Can not extract the archive. Probably because the download file is not a valid tar/phar/zip archive.'
     ];
 
     /**
