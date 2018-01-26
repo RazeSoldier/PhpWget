@@ -37,7 +37,10 @@ class PhpWget {
      * @var array $longopts
      */
     protected $longopts = [
-        'UZ' // Command PhpWget extract the downloaded archive
+        'UZ', // Command PhpWget extract the downloaded archive
+        'md5::',
+        'sha1::',
+        'sha256::'
     ];
 
     /**
@@ -60,7 +63,10 @@ Usage: php <this script name> -u=<file URL> [options]
   -f The file path you want to save, by default it will be saved to the current working directory
   -h This help
 
-  --UZ Extract the archive after download\n
+  --UZ Extract the archive after download
+  --md5=<md5sum> Checks MD5 of the download file
+  --sha1=<sha1sum> Checks SHA1 of the download file
+  --sha256=<sha256sum> Checks SHA256 of the download file\n
 STR;
 
     /**
@@ -74,7 +80,8 @@ STR;
         5 => '[Warning] This script must be run in cli mode.',
         6 => '[Error] PhpWget can not download file.',
         7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
-        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.'
+        8 => '[Notice] Your version of PHP is lower than version 5.5.24 and is likely to go wrong when extracting BSD generated tar file.',
+        9 => '[Warning] You provided a too short hash value, can not verify file integrity. Please provide at least 5 characters.'
     ];
 
     /**
@@ -106,7 +113,8 @@ STR;
      */
     protected $shellColor = [
         'red' => '31m',
-        'green' => '32m'
+        'green' => '32m',
+        'yellow' => '33m'
     ];
 
     /**
@@ -115,6 +123,7 @@ STR;
     static public function classLoader() {
         require_once APP_PATH . '/includes/DownloadFile.class.php';
         require_once APP_PATH . '/includes/UnZip.class.php';
+        require_once APP_PATH . '/includes/VerifyFile.class.php';
     }
 
     /**
@@ -178,4 +187,23 @@ STR;
 		$downloadFile = new DownloadFile();
 		$downloadFile->download();
 	}
+
+    /**
+     * Instantiate VerifyFile class
+     * @param string $filePath
+     */
+    protected function verifyFile($filePath) {
+        if ( isset( $this->options['md5'] ) ) {
+            $md5 = new VerifyFile( $filePath, VerifyFile::MD5 );
+            $md5->verify( $this->options['md5'] );
+        }
+        if ( isset( $this->options['sha1'] ) ) {
+            $sha1 = new VerifyFile( $filePath, VerifyFile::SHA1 );
+            $sha1->verify( $this->options['sha1'] );
+        }
+        if ( isset( $this->options['sha256'] ) ) {
+            $sha1 = new VerifyFile( $filePath, VerifyFile::SHA256 );
+            $sha1->verify( $this->options['sha256'] );
+        }
+    }
 }

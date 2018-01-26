@@ -208,10 +208,12 @@ class DownloadFile extends PhpWget {
 
         $this->displayConcludingWords( $this->result );
 
-        if ( isset($this->options['UZ'] ) ) {
+        if ( isset( $this->options['UZ'] ) ) {
             $unZip = new UnZip( $this->getFileName() );
             $unZip->unZip();
         }
+
+        $this->verifyFile( $this->filePath );
     }
 
     /**
@@ -275,7 +277,9 @@ class DownloadFile extends PhpWget {
             fclose( $this->fileResource );
         }
 		if ( !$this->result ) {
-			unlink( $this->filePath );
-		}
+            if ( file_exists( $this->filePath ) ) {
+                unlink( $this->filePath );
+            }
+        }
     }
 }
