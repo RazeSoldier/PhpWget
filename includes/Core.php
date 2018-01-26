@@ -113,7 +113,8 @@ STR;
      */
     protected $shellColor = [
         'red' => '31m',
-        'green' => '32m'
+        'green' => '32m',
+        'yellow' => '33m'
     ];
 
     /**
