@@ -16,7 +16,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
- * 
+ *
  * @file
  */
 
@@ -183,10 +183,10 @@ STR;
         $this->checkPHPEnvironment();
     }
 
-	final public function run() {
-		$downloadFile = new DownloadFile();
-		$downloadFile->download();
-	}
+    final public function run() {
+        $downloadFile = new DownloadFile();
+        $downloadFile->download();
+    }
 
     /**
      * Instantiate VerifyFile class
