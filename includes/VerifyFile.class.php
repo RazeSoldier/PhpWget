@@ -76,7 +76,7 @@ class VerifyFile extends PhpWget {
         if ( $match === 1 ) {
             $this->shellOutput( $this->messages['pass'], 'green' );
         } else {
-            $this->shellOutput( $this->messages['no-pass'] );
+            $this->shellOutput( $this->messages['no-pass'], 'yellow' );
         }
     }
 
