@@ -63,7 +63,10 @@ Usage: php <this script name> -u=<file URL> [options]
   -f The file path you want to save, by default it will be saved to the current working directory
   -h This help
 
-  --UZ Extract the archive after download\n
+  --UZ Extract the archive after download
+  --md5=<md5sum> Checks MD5 of the download file
+  --sha1=<sha1sum> Checks SHA1 of the download file
+  --sha256=<sha256sum> Checks SHA256 of the download file\n
 STR;
 
     /**
