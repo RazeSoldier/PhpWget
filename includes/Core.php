@@ -76,7 +76,7 @@ STR;
         1 => '[Notice] You have not typed \'u\' option, the script exit.',
         2 => '[Notice] The URL you entered is not in the correct format, please check the URL you entered.',
         3 => '[Warning] You did not load curl extension, the script does not work.',
-        4 => '[Warning] PhpWget does not support your operating system.',
+        4 => null,
         5 => '[Warning] This script must be run in cli mode.',
         6 => '[Error] PhpWget can not download file.',
         7 => '[Warning] You did not load phar extension, PhpWget can\'t extract archive.',
@@ -91,13 +91,8 @@ STR;
      */
     protected $rePatterns = [
         'win' => [
-            1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/',
             2 => '/[:?<>\|]/', // Used to match special characters under Win system
             3 => '/^[a-zA-Z]:[\/\\\\]/' // Used to match drive letter
-        ],
-        'unix' => [
-            1 => '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/', // Used to match the full path
-            2 => '/^\/?([a-zA-Z0-9]*\/)*/' // Used to match the folder path
         ],
         'web' => [
             1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name

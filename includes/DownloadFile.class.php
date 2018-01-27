@@ -108,41 +108,11 @@ class DownloadFile extends PhpWget {
      * Check PHP can write to the target directory
      */
     private function checkFileDir() {
-        if ( is_dir( $this->filePath ) ) {
-            switch( PHP_OS ) {
-                case 'WINNT':
-                case 'WIN32':
-                case 'Windows':
-                    $pattern = $this->rePatterns['win'][1];
-                    break;
-                case 'Linux':
-                case 'Unix':
-                    $pattern = $this->rePatterns['unix'][1];
-                    break;
-                default:
-                    $this->shellOutput( $this->errorMessages[4] );
-                    die ( 1 );
-            } //end switch
-        } else {
-            switch( PHP_OS ) {
-                case 'WINNT':
-                case 'WIN32':
-                case 'Windows':
-                    $pattern = $this->rePatterns['win'][1];
-                    break;
-                case 'Linux':
-                case 'Unix':
-                    $pattern = $this->rePatterns['unix'][2];
-                    break;
-                default:
-                    $this->shellOutput( $this->errorMessages[4] );
-                    die ( 1 );
-            } //end switch
-        } //end if
-        preg_match( $pattern, $this->filePath, $matches);
+        $fileDir = dirname($this->filePath);
 
-        if ( !is_writable( $matches[0] ) ) {
-            $this->shellOutput( "[Warning] PHP can't write to $matches[0], please make sure PHP can be written to the target directory" );
+        if ( !is_writable( $fileDir ) ) {
+            $this->shellOutput( "[Warning] PHP can't write to $fileDir, "
+                    . 'please make sure PHP can be written to the target directory' );
             die ( 1 );
         }
     }
@@ -246,21 +216,7 @@ class DownloadFile extends PhpWget {
             if ( is_dir( $this->filePath ) ) {
                 $filename = 'index.html';
             } else {
-                switch( PHP_OS ) {
-                    case 'WINNT':
-                    case 'WIN32':
-                    case 'Windows':
-                        $pattern = $this->rePatterns['win'][1];
-                        break;
-                    case 'Linux':
-                    case 'Unix':
-                        $pattern = $this->rePatterns['unix'][2];
-                        break;
-                    default:
-                        $this->shellOutput( $this->errorMessages[4] );
-                        die ( 1 );
-                }
-                $filename = preg_replace( $pattern, null, $this->filePath );
+                $filename = basename( $this->filePath );
             }
         } else {
             // Default action, if 'f' option is not specified
