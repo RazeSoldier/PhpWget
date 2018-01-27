@@ -5,6 +5,7 @@
 == Main Feature ==
 * Download files from Internet
 * Extract tar/zip archive after download
+* Verify the integrity of file (Currently supports MD5, SHA1 and SHA256)
 
 == Usage ==
 
