@@ -178,9 +178,16 @@ class DownloadFile extends PhpWget {
         if ( PHP_OS === 'WINNT' ||
                 PHP_OS === 'WIN32' || PHP_OS === 'Windows'
             ) {
-            $specialcharacters = '/[:?<>\|]/';
             $replacement = '.';
-            $output = preg_replace( $specialcharacters, $replacement, $this->filePath );
+
+            $matches = [];
+            $driveLetter = preg_match( $this->rePatterns['win'][3], $this->filePath, $matches );
+            if ( $driveLetter === 1 ) {
+                $tmpVar = preg_replace( $this->rePatterns['win'][3], null, $this->filePath );
+                $output = $matches[0] . preg_replace( $this->rePatterns['win'][2], $replacement, $tmpVar );
+            } else {
+                $output = preg_replace( $this->rePatterns['win'][2], $replacement, $this->filePath );
+            }
             $this->filePath = $output;
         }
     }

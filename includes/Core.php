@@ -91,11 +91,13 @@ STR;
      */
     protected $rePatterns = [
         'win' => [
-            1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/'
+            1 => '/[a-zA-Z]:[\/\\\\]([a-zA-Z0-9\s]*[\/\\\\])*/',
+            2 => '/[:?<>\|]/', // Used to match special characters under Win system
+            3 => '/^[a-zA-Z]:[\/\\\\]/' // Used to match drive letter
         ],
         'unix' => [
-            1 => '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/', //Used to match the full path
-            2 => '/^\/?([a-zA-Z0-9]*\/)*/' //Used to match the folder path
+            1 => '/^\/?([a-zA-Z0-9]*\/)*[a-zA-Z0-9]*/', // Used to match the full path
+            2 => '/^\/?([a-zA-Z0-9]*\/)*/' // Used to match the folder path
         ],
         'web' => [
             1 => '/\bhttps?:\/{2}([a-zA-Z0-9-]*\.)*[a-zA-Z]*\/?\b/', // Used to match domain name
