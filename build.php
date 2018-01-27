@@ -34,7 +34,7 @@ try {
     // Set phar meta-data
     $metadata = [
         'BootstrapFile' => $bootstrapFilename,
-        'Object Name' => 'PhpWget',
+        'Project Name' => 'PhpWget',
         'Project repository' => 'https://github.com/RazeSoldier/PhpWget'
     ];
     $phar->setMetadata( $metadata );
