@@ -5,15 +5,20 @@
 == Main Feature ==
 * Download files from Internet
 * Extract tar/zip archive after download
+* Verify the integrity of file (Currently supports MD5, SHA1 and SHA256)
 
 == Usage ==
 
 PhpWget is a command-line script, can't be used on web.
 
 ```
-php <this script name> -u=<file URL> [options]
-php <this script name> -h
+php <script name> -u=<file URL> [options]
+php <script name> -h
 ```
+
+You can also use phar archive of PhpWget. In production, this way is recommended.
+Just run build.php, build script will build a phar archive to the current directory.
+The phar archive can be used like normal php file.
 
 == Compatibility ==
 
