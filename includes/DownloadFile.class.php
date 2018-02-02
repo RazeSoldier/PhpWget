@@ -47,11 +47,18 @@ class DownloadFile extends PhpWget {
     private $result;
 
     public function __construct() {
+        global $argv;
         $this->options = getopt( $this->optionIndex, $this->longopts );
 
         $this->displayHelpMassage();
         $this->checkOptions();
-        $this->fileURL = $this->options['u'];
+        // Priority 'u' option
+        if ( isset( $this->options['u'] ) ) {
+            $this->fileURL = $this->options['u'];
+        } else {
+            $this->fileURL = $argv[1];
+        }
+
         if ( isset( $this->options['f'] ) and !$this->options['f'] === false) {
             $this->filePath = $this->options['f'];
             $this->checkFileDir();
@@ -76,7 +83,8 @@ class DownloadFile extends PhpWget {
      * Check if the user-entered options meet the requirements
      */
     private function checkOptions() {
-        if ( !isset( $this->options['u'] ) ) {
+        global $argv;
+        if ( !isset( $this->options['u'] ) && !isset( $argv[1] ) ) {
             $this->shellOutput( $this->errorMessages[1] );
             echo $this->helpMassage;
             die ( 1 );
